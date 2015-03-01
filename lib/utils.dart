@@ -3,7 +3,9 @@ library osx.utils;
 import "dart:async";
 import "dart:io";
 import "dart:math";
+import "dart:convert";
 
+part "src/utils/http.dart";
 part "src/utils/time.dart";
 part "src/utils/files.dart";
 
