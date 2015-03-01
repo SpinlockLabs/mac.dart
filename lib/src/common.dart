@@ -34,14 +34,31 @@ class Volume {
 class SystemInformation {
   static Map<String, dynamic> _info = parseAppleScriptRecord(runAppleScriptSync("system info"));
 
-  static String getVersion() => runAppleScriptSync('system version of (system info)');
-  static String getUser() => runAppleScriptSync('short user name of (system info)');
-  static String getUserName() => runAppleScriptSync('long user name of (system info)');
-  static String getComputerName() => runAppleScriptSync('computer name of (system info)');
-  static String getHostName() => runAppleScriptSync('host name of (system info)');
-  static String getUserLocale() => runAppleScriptSync('user locale of (system info)');
-  static int getCpuSpeed() => int.parse(runAppleScriptSync('CPU speed of (system info)'));
-  static int getPhysicalMemory() => int.parse(runAppleScriptSync('physical memory of (system info)'));
+  static String getVersion() => _info["system version"];
+  static String getUser() => _info["short user name"];
+  static String getUserName() => _info["long user name"];
+  static String getComputerName() => _info["computer name"];
+  static String getHostName() => _info["host name"];
+  static String getUserLocale() => _info["user locale"];
+  static String getHomeDirectory() => _info["home directory"];
+  static String getBootVolume() => _info["boot volume"];
+  static String getAppleScriptVersion() => _info["AppleScript version"];
+  static String getCpuType() => _info["CPU type"];
+  static int getCpuSpeed() => _info["CPU speed"];
+  static int getPhysicalMemory() => _info["physical memory"];
+  static String getIPv4Address() => _info["IPv4 address"];
+  static String getPrimaryEthernetAddress() => _info["primary Ethernet address"];
+}
+
+class Computer {
+  static void sleep() {
+    System.runShell("pmset displaysleepnow");
+  }
+
+  static void wake() {
+    var n = now();
+    Process.start("caffeinate", ["-u"]).then((proc) => proc.kill());
+  }
 }
 
 class System {
