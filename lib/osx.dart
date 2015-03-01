@@ -6,6 +6,7 @@ import "dart:io";
 import "dart:typed_data";
 
 import "package:xml/xml.dart" as libxml;
+import "package:lson/lson.dart" as lson show parse;
 import "package:crypto/crypto.dart";
 
 export "dart:io" show sleep;
@@ -16,3 +17,4 @@ part "src/dictation.dart";
 part "src/defaults.dart";
 part "src/script.dart";
 part "src/common.dart";
+part "src/ui.dart";

@@ -96,14 +96,12 @@ class Applications {
     tellApplicationSync(name, "activate");
   }
 
+  static void quit(String name) {
+    tellApplicationSync(name, "quit");
+  }
+
   static int getWindowCount(String name) {
-    var result = tellApplicationSync(name, "count of Finder windows");
-
-    if (result.exitCode != 0) {
-      return 0;
-    }
-
-    return int.parse(result.stdout.trim());
+    return int.parse(tellApplicationSync(name, "count of Finder windows"));
   }
 
   static void closeAll(String name) {
