@@ -166,6 +166,22 @@ class Applications {
     return tellApplicationSync(name, "get name of window ${index}");
   }
 
+  static String tellUI(String name, String action) {
+    return tell("System Events", """
+    tell process "${name}"
+      ${action}
+    end tell
+    """);
+  }
+
+  static void setFrontMost(String name, bool frontmost) {
+    tellUI(name, "set frontmost to ${frontmost}");
+  }
+
+  static void makeFrontMost(String name) {
+    setFrontMost(name, true);
+  }
+
   static int getWindowCount(String name) {
     return int.parse(tellApplicationSync(name, "count of Finder windows"));
   }
