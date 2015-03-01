@@ -91,6 +91,20 @@ class UI {
   }
 }
 
+class Notifications {
+  static void display(String text, {String title, String subtitle, String sound}) {
+    var script = 'display notification "${text}"';
+
+    script += UI._build({
+      'with title "#"': title,
+      "subtitle #": subtitle,
+      'sound name "#"': sound
+    });
+
+    runAppleScriptSync(script);
+  }
+}
+
 class Application {
   final String name;
 
@@ -99,6 +113,23 @@ class Application {
   void launch() {
     Applications.activate(name);
   }
+
+  int getWindowCount() => Applications.getWindowCount(name);
+
+  void quit() {
+    Applications.quit(name);
+  }
+
+  void reopen() {
+    Applications.reopen(name);
+  }
+
+  void tell(String action) {
+    Applications.tell(name, action);
+  }
+
+  @override
+  String toString() => name;
 }
 
 class DialogResult {

@@ -31,6 +31,23 @@ class Volume {
   static void toggleMuted() => setMuted(!isMuted());
 }
 
+class SystemInformation {
+  static String getVersion() => runAppleScriptSync('system version of (system info)');
+  static String getUser() => runAppleScriptSync('short user name of (system info)');
+  static String getUserName() => runAppleScriptSync('long user name of (system info)');
+  static String getComputerName() => runAppleScriptSync('computer name of (system info)');
+  static String getHostName() => runAppleScriptSync('host name of (system info)');
+  static String getUserLocale() => runAppleScriptSync('user locale of (system info)');
+  static int getCpuSpeed() => int.parse(runAppleScriptSync('CPU speed of (system info)'));
+  static int getPhysicalMemory() => int.parse(runAppleScriptSync('physical memory of (system info)'));
+}
+
+class System {
+  static void beep() {
+    runAppleScriptSync("beep");
+  }
+}
+
 class Battery {
   static num getLevel() {
     var info = _info();

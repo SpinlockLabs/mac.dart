@@ -91,6 +91,56 @@ class FinderWindow {
   String get refId => id is int ? "Finder window ${id}" : id;
 }
 
+class TaskManager {
+  static Set<String> getOpenTasks() {
+    return runAppleScriptSync('''
+    tell application "System Events" to get name of every process whose background only is false
+    ''').split(", ").toSet();
+  }
+
+  static Set<String> getTasks() {
+    return runAppleScriptSync('''
+    tell application "System Events" to get name of every process
+    ''').split(", ").toSet();
+  }
+
+  static Set<String> getVisibleTasks() {
+    return runAppleScriptSync('''
+    tell application "System Events" to get name of every process whose visible is true
+    ''').split(", ").toSet();
+  }
+}
+
+class Launchpad {
+  static void activate() {
+    Applications.activate("Launchpad");
+  }
+
+  static void close() {
+    Applications.quit("Launchpad");
+  }
+}
+
+class MissionControl {
+  static void activate() {
+    SystemEvents.key("code 126 using control down");
+  }
+
+  static void close() {
+    Applications.quit("Mission Control");
+  }
+}
+
+class Dashboard {
+  static void activate() {
+    SystemEvents.key("code 123 using control down");
+  }
+
+  static void close() {
+    Applications.quit("Dashboard");
+  }
+}
+
 class Applications {
   static void activate(String name) {
     tellApplicationSync(name, "activate");
@@ -110,6 +160,12 @@ class Applications {
 
   static void reopen(String name) {
     tell(name, "reopen");
+  }
+
+  static Set<Application> list() {
+    return runAppleScriptSync(r'''
+    paragraphs of (do shell script "find /Applications/ -name \"*.app\" -maxdepth 2| sed -e \"s/\\(.*\\)\\/\\([^\\/]*\\).app/\\2/g\"")
+    ''').split(", ").toSet().map((it) => new Application(it));
   }
 
   static String tell(String name, String action) => tellApplicationSync(name, action);
