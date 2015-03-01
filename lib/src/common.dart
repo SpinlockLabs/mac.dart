@@ -1,8 +1,8 @@
 part of osx;
 
 class Common {
-  static Future<bool> areHiddenFilesShown() => Defaults.get(Domains.FINDER, "AppleShowAllFiles");
-  static Future setHiddenFilesShown(bool shown) => Defaults.set(Domains.FINDER, "AppleShowAllFiles", shown);
+  static bool areHiddenFilesShown() => Defaults.get(Domains.FINDER, "AppleShowAllFiles");
+  static void setHiddenFilesShown(bool shown) => Defaults.set(Domains.FINDER, "AppleShowAllFiles", shown);
 }
 
 class Domains {
@@ -47,6 +47,14 @@ class SystemInformation {
 class System {
   static void beep() {
     runAppleScriptSync("beep");
+  }
+
+  static String runShell(String command) {
+    return runAppleScriptSync('do shell script "${command}"');
+  }
+
+  static String runAdminShell(String command) {
+    return runAppleScriptSync('do shell script "${command}" with administrator privileges');
   }
 }
 
