@@ -45,6 +45,12 @@ class Finder {
   static FinderWindow getWindow(dynamic id) => new FinderWindow(id);
 }
 
+class DefaultBrowser {
+  static void open(String url) {
+    runAppleScriptSync('open location "${url}"');
+  }
+}
+
 class FinderWindow {
   dynamic id;
 
@@ -154,6 +160,10 @@ class Applications {
 
   static void quit(String name) {
     tellApplicationSync(name, "quit");
+  }
+
+  static String getWindowTitle(String name, int index) {
+    return tellApplicationSync(name, "get name of window ${index}");
   }
 
   static int getWindowCount(String name) {

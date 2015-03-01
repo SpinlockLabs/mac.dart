@@ -49,16 +49,16 @@ class _PropertyListParser {
 _PropertyListParser _plistParser = new _PropertyListParser();
 
 class PropertyLists {
-  static Future<dynamic> fromString(String input) async {
+  static dynamic fromString(String input) {
     if (!input.trim().startsWith("<")) {
-      input = await convert(input, "xml1");
+      input = convert(input, "xml1");
     }
 
     return _plistParser.parse(input);
   }
 
-  static Future<dynamic> fromFile(File file) async {
-    return await fromString(await file.readAsString());
+  static dynamic fromFile(File file) {
+    return fromString(file.readAsStringSync());
   }
 
   static String encode(dynamic input) {
@@ -112,18 +112,22 @@ class PropertyLists {
     return builder.build().toXmlString(pretty: true, indent: "  ");
   }
 
-  static Future<File> writeFile(dynamic input, File file) async {
-    if (!(await file.exists())) {
-      await file.create(recursive: true);
+  static File writeFile(dynamic input, File file) {
+    if (!file.existsSync()) {
+      file.createSync(recursive: true);
     }
 
-    return await file.writeAsString(encode(input));
+    return file..writeAsStringSync(encode(input));
   }
 
-  static Future<String> convert(String input, String format) async {
-    var proc = await Process.start("plutil", ["-convert", format, "-"]);
-    proc.stdin.add(UTF8.encode(input));
-    await proc.stdin.close();
-    return (await proc.stdout.transform(UTF8.decoder).join()).trim();
+  static String convert(String input, String format) {
+    var file = Files.getTempFile(input);
+    file.writeAsStringSync(input);
+    var result = Process.runSync("plutil", ["-convert", format, file.path]);
+    if (result.exitCode != 0) {
+      throw new Exception("Failed to convert plist.");
+    }
+    file.deleteSync();
+    return result.stdout.trim();
   }
 }
