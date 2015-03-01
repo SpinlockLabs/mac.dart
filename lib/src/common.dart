@@ -32,6 +32,8 @@ class Volume {
 }
 
 class SystemInformation {
+  static Map<String, dynamic> _info = parseAppleScriptRecord(runAppleScriptSync("system info"));
+
   static String getVersion() => runAppleScriptSync('system version of (system info)');
   static String getUser() => runAppleScriptSync('short user name of (system info)');
   static String getUserName() => runAppleScriptSync('long user name of (system info)');
@@ -51,20 +53,22 @@ class System {
 class Battery {
   static num getLevel() {
     var info = _info();
-    info = info.substring(info.indexOf("; ", 7) + 2);
-    info = info.substring(0, info.indexOf(new RegExp(r"[^0-9]")));
-    return num.parse(info);
+    info = info.replaceAll("\t", "; ");
+    var x = info.split("; ")[1];
+    x = x.substring(0, x.indexOf("%"));
+    return num.parse(x);
   }
 
   static bool isCharging() {
-    return !(_info().contains("Not Charging"));
+    return _info().contains("charging;");
   }
 
   static bool isPluggedIn() {
-    return _info().contains("AC;");
+    var info = _info();
+    return info.contains("charging;") || info.contains("charged;");
   }
 
   static String _info() {
-    return runAppleScriptSync('do shell script "pmset -g everything | grep Cycles"').trim();
+    return Process.runSync("pmset", ["-g", "batt"]).stdout.split("\n")[1].trim();
   }
 }

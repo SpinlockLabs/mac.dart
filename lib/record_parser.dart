@@ -18,7 +18,7 @@ class RecordGrammarDefinition extends GrammarDefinition {
   start() => ref(value).end();
 
   value() => ref(dict) | ref(array) | ref(numberValue) | ref(stringValue) | ref(alias) | ref(data) | ref(dictEntry) | ref(undefinedValue) | ref(unknown);
-  dict() => char("{") & ref(dictEntry).separatedBy(char(","), includeSeparators: false) & char("}");
+  dict() => char("{") & ref(dictEntry).separatedBy(char(",") & char(" ").optional(), includeSeparators: false) & char("}");
   dictEntry() => ref(keyString) & char(":") & ref(value);
   array() => char("{") & ref(value).separatedBy(char(","), includeSeparators: false) & char("}");
   alias() => string("alias ") & ref(stringValue);
@@ -72,7 +72,7 @@ class RecordParserDefinition extends RecordGrammarDefinition {
 
   @override
   alias() => super.alias().map((it) {
-    return it[1];
+    return "/Volumes/" + it[1].replaceAll(":", "/");
   });
 
   @override

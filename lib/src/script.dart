@@ -1,11 +1,11 @@
 part of osx;
 
 Future<ProcessResult> runAppleScript(String input) async {
-  return await Process.run("osascript", ["-e", input]);
+  return await Process.run("osascript", ["-ss", "-e", input]);
 }
 
 String runAppleScriptSync(String input) {
-  var result = Process.runSync("osascript", ["-e", input]);
+  var result = Process.runSync("osascript", ["-ss", "-e", input]);
   if (result.exitCode != 0) {
     String error = result.stderr.trim();
 
@@ -39,7 +39,7 @@ class UserCanceledException {
 }
 
 Future<ProcessResult> runOSAScript(String input, String language) async {
-  return await Process.run("osascript", ["-l", language, "-e", input]);
+  return await Process.run("osascript", ["-ss", "-l", language, "-e", input]);
 }
 
 void say(String text, {String voice}) {

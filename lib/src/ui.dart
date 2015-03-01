@@ -32,7 +32,7 @@ class UI {
     });
 
     script += ')';
-    return new File(runAppleScriptSync(script));
+    return new File(parseAppleScriptRecord(runAppleScriptSync(script)));
   }
 
   static Directory chooseFolder({String prompt, String defaultLocation, bool invisibles: false}) {
@@ -45,7 +45,7 @@ class UI {
     });
 
     script += ')';
-    return new Directory(runAppleScriptSync(script));
+    return new Directory(parseAppleScriptRecord(runAppleScriptSync(script)));
   }
 
   static Application chooseApplication({String title, String prompt}) {
