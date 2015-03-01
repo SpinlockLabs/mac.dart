@@ -9,12 +9,8 @@ class UI {
       'with icon #': icon,
       'buttons #': buttons,
       'default button #': defaultButton,
-      'giving up after #': giveUpAfter
+      'giving up after #': giveUpAfter,
     });
-
-    if (defaultAnswer != null) {
-      script += ' default answer "${defaultAnswer}"';
-    }
 
     var result = runAppleScriptSync(script);
     var record = parseAppleScriptRecord(result);
@@ -75,13 +71,13 @@ class UI {
         var v = value.toString();
 
         if (value is List) {
-          v = value.map((it) {
+          v = "{" + value.map((it) {
             if (it is String) {
               return '"${it}"';
             } else {
               return it.toString();
             }
-          }).join(", ");
+          }).join(", ") + "}";
         }
 
         s += " ${key.replaceAll("#", v)}";

@@ -20,8 +20,13 @@ void main() {
     say("Textual 5 is not installed.");
   }
 
-  say("Opening Mission Control");
-  MissionControl.activate();
-  sleep(FIVE_SECONDS);
-  MissionControl.close();
+  var result = UI.displayDialog("Open Mission Control?", buttons: [
+    "Yes",
+    "No"
+  ]);
+
+  if (result.button == "Yes") {
+    say("Opening Mission Control");
+    MissionControl.activate();
+  }
 }
