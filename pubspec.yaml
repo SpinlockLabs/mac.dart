@@ -3,5 +3,3 @@ description: Tools for OSX
 dependencies:
   xml: ">=2.0.0 <3.0.0"
   crypto: ">=0.9.0 <1.0.0"
-  lson:
-    git: https://github.com/DirectMyFile/lson.dart.git

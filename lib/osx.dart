@@ -1,15 +1,14 @@
 library osx;
 
 import "dart:async";
-import "dart:convert";
 import "dart:io";
 import "dart:typed_data";
 
 import "package:xml/xml.dart" as libxml;
-import "package:lson/lson.dart" as lson show parse;
 import "package:crypto/crypto.dart";
 
 import "package:osx/utils.dart";
+import "package:osx/record_parser.dart";
 
 export "dart:io" show sleep;
 

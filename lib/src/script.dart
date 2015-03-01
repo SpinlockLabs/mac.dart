@@ -54,28 +54,14 @@ Future<ProcessResult> tellApplication(String app, String action) async {
   """));
 }
 
-Map<String, dynamic> parseAppleScriptRecord(String input) {
-  try {
-    if (input.startsWith("{") || input.startsWith("[")) {
-      return lson.parse(input);
-    } else {
-      return parseAppleScriptRecord("{${input}}");
-    }
-  } catch (e) {
-    // Probably a List
-    try {
-      var i = input.substring(1, input.length - 1);
-      return parseAppleScriptRecord("[" + i + "]");
-    } catch (e) {
-      throw new FormatException();
-    }
-  }
-}
-
 String tellApplicationSync(String app, String action){
   return runAppleScriptSync("""
   tell application "${app}"
     ${action}
   end tell
   """);
+}
+
+dynamic parseAppleScriptRecord(String input) {
+  return new RecordParser().parse(input).value;
 }
