@@ -105,33 +105,6 @@ class Notifications {
   }
 }
 
-class Application {
-  final String name;
-
-  Application(this.name);
-
-  void launch() {
-    Applications.activate(name);
-  }
-
-  int getWindowCount() => Applications.getWindowCount(name);
-
-  void quit() {
-    Applications.quit(name);
-  }
-
-  void reopen() {
-    Applications.reopen(name);
-  }
-
-  void tell(String action) {
-    Applications.tell(name, action);
-  }
-
-  @override
-  String toString() => name;
-}
-
 class DialogResult {
   String text;
   String button;

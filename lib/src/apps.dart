@@ -104,6 +104,12 @@ class TaskManager {
     ''').split(", ").toSet();
   }
 
+  static Set<int> getIds(String name) => runAppleScriptSync("""
+  tell application "System Events"
+    get id of every process whose name is "${name}"
+  end tell
+  """).split(", ").map(int.parse);
+
   static Set<String> getVisibleTasks() {
     return runAppleScriptSync('''
     tell application "System Events" to get name of every process whose visible is true
@@ -122,12 +128,12 @@ class Launchpad {
 }
 
 class MissionControl {
-  static void activate() {
-    SystemEvents.key("code 126 using control down");
+  static void activate({bool slow: false}) {
+    SystemEvents.key("code 126 using {control down${slow ? ", shift down" : ""}}");
   }
 
-  static void close() {
-    Applications.quit("Mission Control");
+  static void close({bool slow: false}) {
+    SystemEvents.key("code 125 using {control down${slow ? ", shift down" : ""}}");
   }
 }
 
@@ -137,7 +143,7 @@ class Dashboard {
   }
 
   static void close() {
-    Applications.quit("Dashboard");
+    SystemEvents.key("code 124 using control down");
   }
 }
 
@@ -168,7 +174,46 @@ class Applications {
     ''').split(", ").toSet().map((it) => new Application(it));
   }
 
+  static bool isInstalled(String name) => list().map((it) => it.name).contains(name);
+  static Application get(String name) => new Application(name);
+
   static String tell(String name, String action) => tellApplicationSync(name, action);
+}
+
+class Application {
+  final String name;
+
+  Application(this.name);
+
+  void launch() {
+    Applications.activate(name);
+  }
+
+  int getWindowCount() => Applications.getWindowCount(name);
+  Set<int> getIds() => TaskManager.getIds(name);
+
+  void quit() {
+    Applications.quit(name);
+  }
+
+  void reopen() {
+    Applications.reopen(name);
+  }
+
+  String tell(String action) {
+    return Applications.tell(name, action);
+  }
+
+  String getPath() {
+    return Applications.get("System Events").tell("""
+    POSIX path of (path to application "${name}")
+    """);
+  }
+
+  bool isInstalled() => Applications.isInstalled(name);
+
+  @override
+  String toString() => name;
 }
 
 class SystemEvents {

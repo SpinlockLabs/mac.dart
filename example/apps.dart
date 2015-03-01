@@ -1,9 +1,10 @@
 import "package:osx/osx.dart";
 
 void main() {
-  var apps = Applications.list();
+  var app = Applications.get("Textual 5");
 
-  for (var app in apps) {
-    print(app.name);
+  if (app.isInstalled()) {
+    print("IDs: ${app.getIds()}");
+    print("Path: ${app.getPath()}");
   }
 }
