@@ -20,7 +20,7 @@ class RecordGrammarDefinition extends GrammarDefinition {
   value() => ref(dict) | ref(array) | ref(numberValue) | ref(stringValue) | ref(alias) | ref(data) | ref(dictEntry) | ref(undefinedValue) | ref(unknown);
   dict() => char("{") & ref(dictEntry).separatedBy(char(",") & char(" ").optional(), includeSeparators: false) & char("}");
   dictEntry() => ref(keyString) & char(":") & ref(value);
-  array() => char("{") & ref(value).separatedBy(char(","), includeSeparators: false) & char("}");
+  array() => char("{") & ref(value).separatedBy(char(",") & char(" ").optional(), includeSeparators: false) & char("}");
   alias() => string("alias ") & ref(stringValue);
   stringValue() => char('"')
     & ref(characterPrimitive).star()

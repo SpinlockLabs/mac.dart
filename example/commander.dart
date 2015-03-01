@@ -5,15 +5,15 @@ void main() {
 }
 
 void ask() {
+  var apps = Applications.list().map((it) => it.name).toList();
   var result = SpeechRecognizer.select([
-    "Mission Control",
-    "Google Chrome",
-    "Textual 5",
     "What can I open?"
-  ], prompt: "What would you like to open?");
+  ]..addAll(apps), prompt: "What would you like to open?");
 
   if (result == "What can I open?") {
-    say("Mission Control, Google Chrome, and Textual 5");
+    var str = apps.sublist(0, apps.length - 1).join(", ");
+    str += ", and ${apps.last}";
+    say(str);
     ask();
   } else if (result == "Mission Control") {
     MissionControl.activate();

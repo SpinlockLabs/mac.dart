@@ -194,10 +194,16 @@ class Applications {
     tell(name, "reopen");
   }
 
-  static Set<Application> list() {
-    return runAppleScriptSync(r'''
-    paragraphs of (do shell script "find /Applications/ -name \"*.app\" -maxdepth 2| sed -e \"s/\\(.*\\)\\/\\([^\\/]*\\).app/\\2/g\"")
-    ''').split(", ").toSet().map((it) => new Application(it));
+  static Set<Application> list({bool normal: true}) {
+    if (normal) {
+      return parseAppleScriptRecord(runAppleScriptSync(r'''
+      paragraphs of (do shell script "find /Applications/ -name \"*.app\" -maxdepth 1 | sed -e \"s/\\(.*\\)\\/\\([^\\/]*\\).app/\\2/g\"")
+      ''')).toSet().map((it) => new Application(it));
+    } else {
+      return parseAppleScriptRecord(runAppleScriptSync(r'''
+      paragraphs of (do shell script "find /Applications/ -name \"*.app\" -maxdepth 2 | sed -e \"s/\\(.*\\)\\/\\([^\\/]*\\).app/\\2/g\"")
+      ''')).toSet().map((it) => new Application(it));
+    }
   }
 
   static bool isInstalled(String name) => list().map((it) => it.name).contains(name);
