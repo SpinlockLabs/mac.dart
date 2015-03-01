@@ -23,3 +23,4 @@ const Duration ONE_SECOND = const Duration(seconds: 1);
 const Duration TWO_SECONDS = const Duration(seconds: 2);
 const Duration THREE_SECONDS = const Duration(seconds: 3);
 const Duration FIVE_SECONDS = const Duration(seconds: 5);
+const Duration TEN_SECONDS = const Duration(seconds: 10);

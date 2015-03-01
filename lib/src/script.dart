@@ -7,15 +7,30 @@ Future<ProcessResult> runAppleScript(String input) async {
 String runAppleScriptSync(String input) {
   var result = Process.runSync("osascript", ["-e", input]);
   if (result.exitCode != 0) {
-    var error = result.stderr.trim();
+    String error = result.stderr.trim();
 
     if (error.contains("User canceled")) {
       throw new UserCanceledException();
     }
 
+    if (error.contains("syntax error:")) {
+      var split = error.split(":");
+      var msg = split.skip(2).join(":").trim();
+      throw new ScriptSyntaxError(msg);
+    }
+
     throw new Exception("Failed to execute script!\nSTDERR:\n${error}");
   }
   return result.stdout.trim();
+}
+
+class ScriptSyntaxError {
+  final String message;
+
+  ScriptSyntaxError(this.message);
+
+  @override
+  String toString() => "${message}";
 }
 
 class UserCanceledException {
