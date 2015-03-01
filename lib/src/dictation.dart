@@ -1,5 +1,17 @@
 part of osx;
 
+class SpeechRecognizer {
+  static String select(List<String> commands, {String prompt}) {
+    var script = "listen";
+    script += UI._build({
+      "for #": commands,
+      'with prompt "#"': prompt
+    });
+
+    return parseAppleScriptRecord(Applications.tell("SpeechRecognitionServer", script));
+  }
+}
+
 speak(input, {String voice}) async {
   if (input == null) {
     return false;
