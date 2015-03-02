@@ -270,32 +270,40 @@ class Launchpad {
 }
 
 class MissionControl {
-  static void activate({bool slow: false}) {
-    SystemEvents.key("code 126 using {control down${slow ? ", shift down" : ""}}");
+  static void activate() {
+    Applications.activate("Mission Control");
   }
 
-  static void close({bool slow: false}) {
-    SystemEvents.key("code 125 using {control down${slow ? ", shift down" : ""}}");
+  static void close() {
+    Applications.quit("Mission Control");
   }
 }
 
 class Dashboard {
   static void activate() {
-    SystemEvents.key("code 123 using control down");
+    Applications.activate("Dashboard");
   }
 
   static void close() {
-    SystemEvents.key("code 124 using control down");
+    Applications.quit("Dashboard");
   }
 }
 
 class Applications {
   static void activate(String name) {
-    tellApplicationSync(name, "activate");
+    tellApplication(name, """
+    ignoring application responses
+      activate
+    end ignoring
+    """);
   }
 
   static void quit(String name) {
-    tellApplicationSync(name, "quit");
+    tellApplication(name, """
+    ignoring application responses
+      quit
+    end ignoring
+    """);
   }
 
   static String getWindowTitle(String name, int index) {

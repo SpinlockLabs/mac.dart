@@ -62,8 +62,8 @@ class Computer {
 }
 
 class System {
-  static void beep() {
-    runAppleScriptSync("beep");
+  static void beep([int times = 1]) {
+    runAppleScriptSync("beep ${times}");
   }
 
   static String runShell(String command) {
@@ -72,6 +72,18 @@ class System {
 
   static String runAdminShell(String command) {
     return runAppleScriptSync('do shell script "${command}" with administrator privileges');
+  }
+}
+
+class Clipboard {
+  static void set(String content) {
+    var str = content.split("\n").map((it) => '"' + it + '"').join(",");
+
+    runAppleScriptSync("set clipboard to (text of {${str}})");
+  }
+
+  static String get() {
+    return parseAppleScriptRecord(runAppleScriptSync("paragraphs of (get the clipboard)")).join("\n").trim();
   }
 }
 

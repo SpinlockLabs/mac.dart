@@ -1,5 +1,6 @@
 import "package:osx/osx.dart";
 
 void main() {
-  Notifications.display("Hello World");
+  Applications.get("Notification Center").launch();
+  //Notifications.display("Hello World");
 }

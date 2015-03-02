@@ -31,7 +31,7 @@ class RecordGrammarDefinition extends GrammarDefinition {
   characterPrimitive() => ref(characterNormal)
     | ref(characterEscape)
     | ref(characterOctal);
-  characterNormal() => pattern('^"\\');
+  characterNormal() => pattern('^"\\').flatten();
   characterEscape() => char('\\')
   & pattern(new List.from(_escapeTable.keys).join());
   characterOctal() => string('\\u').seq(pattern("0-9A-Fa-f").times(4).flatten());
@@ -89,6 +89,9 @@ class RecordParserDefinition extends RecordGrammarDefinition {
   numberValue() => super.numberValue().map((it) {
     return num.parse(it);
   });
+
+  @override
+  characterEscape() => super.characterEscape().map((each) => _escapeTable[each[1]]);
 
   @override
   undefinedValue() => super.undefinedValue().map((it) {

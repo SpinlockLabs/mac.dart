@@ -1,10 +1,29 @@
 import "package:osx/osx.dart";
 
 void main() {
-  ask();
+  select();
 }
 
-void ask() {
+void select() {
+  var action = SpeechRecognizer.select([
+    "Open Application",
+    "Go to Sleep",
+    "Battery Level"
+  ], prompt: "What do you want?");
+
+  if (action == "Open Application") {
+    open();
+  } else if (action == "Go to Sleep") {
+    System.sleep();
+  } else if (action == "Battery Level") {
+    say("Your battery is at ${Battery.getLevel()}%");
+  } else {
+    say("I don't understand.");
+    select();
+  }
+}
+
+void open() {
   var apps = Applications.list().map((it) => it.name).toList();
   var result = SpeechRecognizer.select([
     "What can I open?"
@@ -15,8 +34,6 @@ void ask() {
     str += ", and ${apps.last}";
     say(str);
     ask();
-  } else if (result == "Mission Control") {
-    MissionControl.activate();
   } else {
     Applications.get(result).launch();
   }
