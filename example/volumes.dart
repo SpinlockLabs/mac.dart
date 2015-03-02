@@ -5,5 +5,5 @@ void main() {
 
   print("Volume Name: ${volume.name}");
   print("Volume ID: ${volume.id}");
-  print("Volume Size: ${volume.size}");
+  print("Volume Size: ${volume.sizeGigabytes} GB");
 }

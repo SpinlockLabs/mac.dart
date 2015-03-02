@@ -5,6 +5,40 @@ class Common {
   static void setHiddenFilesShown(bool shown) => Defaults.set(Domains.FINDER, "AppleShowAllFiles", shown);
 }
 
+class Opener {
+  static void open(String path) {
+    var result = Process.runSync("open", [path]);
+    if (result.exitCode != 0) {
+      throw new Exception("Failed to open ${path}");
+    }
+  }
+
+  static void openWith(String path, String app) {
+    var result = Process.runSync("open", ["-a", app, path]);
+    if (result.exitCode != 0) {
+      throw new Exception("Failed to open ${path} with ${app}");
+    }
+  }
+
+  static void reveal(String path) {
+    var result = Process.runSync("open", ["-R", path]);
+    if (result.exitCode != 0) {
+      throw new Exception("Failed to reveal ${path}");
+    }
+  }
+
+  static void viewCurrentDirectory() {
+    open(".");
+  }
+
+  static void edit(String path) {
+    var result = Process.runSync("open", ["-e", path]);
+    if (result.exitCode != 0) {
+      throw new Exception("Failed to edit ${path}");
+    }
+  }
+}
+
 class Domains {
   static const String FINDER = "com.apple.finder";
 }
@@ -56,7 +90,6 @@ class Computer {
   }
 
   static void wake() {
-    var n = now();
     Process.start("caffeinate", ["-u"]).then((proc) => proc.kill());
   }
 }
@@ -117,6 +150,9 @@ class Volume {
   int size;
   String id;
   List<VolumePartition> partitions = [];
+
+  num get sizeMegabytes => size / (1024 * 1024);
+  num get sizeGigabytes => num.parse((sizeMegabytes / 1024).toStringAsFixed(2));
 
   Volume(this.name);
 }
