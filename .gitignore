@@ -11,3 +11,14 @@ dartdoc-viewer/
 out/
 *.iml
 .c9*
+.DS_Store
+.Trashes
+*.swp
+*~.nib
+build/
+*.pbxuser
+*.perspective
+*.perspectivev3
+*.xcuserstate
+project.xcworkspace/
+xcuserdata/
