@@ -66,11 +66,11 @@ class GoogleChrome {
     }
   })();
 
-  static void reload([String tab]) {
+  static void reload([tab]) {
     tellTab("reload", tab);
   }
 
-  static String tellTab(String act, [String tab]) {
+  static String tellTab(String act, [tab]) {
     return tell("${act}${tab != null ? ' ${tab}' : ''}");
   }
 
@@ -118,6 +118,27 @@ class GoogleChrome {
     tell("execute ${tab != null ? tab + " " : ""} javascript \"${script}\"");
   }
 
+  static String getUrl(int tab) {
+    return parseAppleScriptRecord(tell("get URL of tab ${tab}"));
+  }
+
+  static void setUrl(int tab, String url) {
+    tell('''
+    tell application "${APP}"
+      set theWindows to every window
+      repeat with theWindow in theWindows
+        set theTabs to every tab of theWindow
+        repeat with theTab in theTabs
+          set theId to id of theTab
+          if theId is ${tab} then
+            set URL of theTab to "${url}"
+          end if
+        end repeat
+      end repeat
+    end tell
+    ''');
+  }
+
   static void activate() {
     tell("activate");
   }
@@ -130,38 +151,91 @@ class GoogleChrome {
     tellTab("exit presentation mode ${tab}");
   }
 
+  static String _withWindow(int id, String action, {String before, String after}) {
+    return tell('''
+    set theWindows to every window
+    repeat with theWindow in theWindows
+      if id of theWindow is ${id} then
+        ${action}
+      end if
+    end repeat
+    ${after}
+    ''');
+  }
+
+  static String _withTab(int window, int id, String action, {String before, String after}) {
+    return _withWindow(window, '''
+    set theTabs to every tab
+    repeat with theTab in theTabs
+      if id of theTab is ${id} then
+        ${action}
+      end if
+    end repeat
+    ''', before: before, after: after);
+  }
+
   static GoogleChromeWindow getMainWindow() {
-    return new GoogleChromeWindow(1);
+    return getWindows().first;
   }
 
   static GoogleChromeTab createTab(int window) {
     return new GoogleChromeTab(window, parseAppleScriptRecord(tell("get id of (make new tab at end of tabs of window ${window})")));
   }
 
-  static List<GoogleChromeWindow> getWindows() {
-    var r = tell("get index of every window");
-    return parseAppleScriptRecord(r).map((it) {
-      return new GoogleChromeWindow(it);
-    }).toList();
+  static int getWindowIndex(int id) {
+    return parseAppleScriptRecord(_withWindow(id, """
+    return index of theWindow
+    """));
   }
 
-  static List<GoogleChromeTab> getTabs(int id) {
-    return parseAppleScriptRecord(tell("get id of every tab of window ${id}")).map((it) => new GoogleChromeTab(id, it)).toList();
+  static List<GoogleChromeWindow> getWindows() {
+    var r = tell("get id of every window");
+    return parseAppleScriptRecord(r).map((it) {
+      return new GoogleChromeWindow(it);
+    }).toList()..sort((a, b) => b.id.compareTo(a.id));
+  }
+
+  static List<GoogleChromeTab> getTabs(int window) {
+    return parseAppleScriptRecord(_withWindow(window, """
+    set theTabs to every tab of theWindow
+    repeat with theTab in theTabs
+      set theId to the id of theTab
+      set end of theTabIds to theId
+    end repeat
+    """, before: "set theTabIds to {}", after: "return theTabIds"));
   }
 
   static String tell(String action) {
     return Applications.tell(APP, action);
   }
 
-  static String getTabName(int window, int tab) {
-    var r = tell("""
-    get tab whose id is ${tab} of window ${window}
+  static GoogleChromeTab getActiveTab(int window) {
+    var result = _withWindow(window, """
+    return id of active tab
     """);
 
-    print(r);
-
-    return r;
+    return new GoogleChromeTab(window, parseAppleScriptRecord(result));
   }
+
+  static String getTabName(int id) {
+    var result = runAppleScriptSync("""
+    tell application "${APP}"
+      set theWindows to every window
+      repeat with theWindow in theWindows
+        set theTabs to every tab of theWindow
+        repeat with theTab in theTabs
+          set theId to id of theTab
+          if theId is ${id} then
+            return name of theTab
+          end if
+        end repeat
+      end repeat
+    end tell
+    """);
+
+    return parseAppleScriptRecord(result);
+  }
+
 }
 
 class GoogleChromeWindow {
@@ -170,7 +244,23 @@ class GoogleChromeWindow {
   GoogleChromeWindow(this.id);
 
   String getName() {
-    return parseAppleScriptRecord(GoogleChrome.tell("get name of window ${id}"));
+    return parseAppleScriptRecord(GoogleChrome.tell("""
+    set theWindows to every window
+    repeat with theWindow in theWindows
+      set theId to the id of theWindow
+      if theId is ${id} then
+        return name of theWindow
+      end if
+    end repeat
+    """));
+  }
+
+  GoogleChromeTab getActiveTab() {
+    return GoogleChrome.getActiveTab(id);
+  }
+
+  GoogleChromeTab newTab() {
+    return GoogleChrome.createTab(id);
   }
 
   List<GoogleChromeTab> getTabs() {
@@ -184,7 +274,34 @@ class GoogleChromeTab {
 
   GoogleChromeTab(this.window, this.id);
 
-  String getName() => GoogleChrome.getTabName(window, id);
+  String getName() => GoogleChrome.getTabName(id);
+  String getUrl() => GoogleChrome.getUrl(id);
+
+  void executeJavaScript(String js) {
+    GoogleChrome.executeJavaScript(js, id);
+  }
+
+  void reload() {
+    GoogleChrome.reload(id);
+  }
+
+  void makeActiveTab() {
+    GoogleChrome._withWindow(window, """
+    set active tab index of theWindow to ${id}
+    """);
+  }
+
+  void redo() {
+    GoogleChrome.redo(id);
+  }
+
+  void undo() {
+    GoogleChrome.undo(id);
+  }
+
+  void goto(String url) {
+    GoogleChrome.setUrl(id, url);
+  }
 }
 
 class FinderWindow {
