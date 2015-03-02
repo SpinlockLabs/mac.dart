@@ -14,7 +14,7 @@ void select() {
   if (action == "Open Application") {
     open();
   } else if (action == "Go to Sleep") {
-    System.sleep();
+    Computer.sleep();
   } else if (action == "Battery Level") {
     say("Your battery is at ${Battery.getLevel()}%");
   } else {
@@ -33,7 +33,7 @@ void open() {
     var str = apps.sublist(0, apps.length - 1).join(", ");
     str += ", and ${apps.last}";
     say(str);
-    ask();
+    open();
   } else {
     Applications.get(result).launch();
   }
