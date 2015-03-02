@@ -51,6 +51,142 @@ class DefaultBrowser {
   }
 }
 
+class GoogleChrome {
+  static String APP = (() {
+    var apps = Applications.list().map((it) => it.name).toList();
+
+    if (apps.contains("Google Chrome")) {
+      return "Google Chrome";
+    } else if (apps.contains("Chromium")) {
+      return "Chromium";
+    } else if (apps.contains("Google Chrome Canary")) {
+      return "Google Chrome Canary";
+    } else {
+      return null;
+    }
+  })();
+
+  static void reload([String tab]) {
+    tellTab("reload", tab);
+  }
+
+  static String tellTab(String act, [String tab]) {
+    return tell("${act}${tab != null ? ' ${tab}' : ''}");
+  }
+
+  static void back([tab]) {
+    tellTab("go back", tab);
+  }
+
+  static void forward([tab]) {
+    tellTab("go forward", tab);
+  }
+
+  static void selectAll([tab]) {
+    tellTab("select all", tab);
+  }
+
+  static void cutSelection([tab]) {
+    tellTab("cut selection", tab);
+  }
+
+  static void copySelection([tab]) {
+    tellTab("copy selection", tab);
+  }
+
+  static void pasteSelection([tab]) {
+    tellTab("paste selection", tab);
+  }
+
+  static void undo([tab]) {
+    tellTab("undo", tab);
+  }
+
+  static void redo([tab]) {
+    tellTab("redo", tab);
+  }
+
+  static void stop([tab]) {
+    tellTab("stop", tab);
+  }
+
+  static void viewSource([tab]) {
+    tellTab("view source", tab);
+  }
+
+  static void executeJavaScript(String script, [tab]) {
+    tell("execute ${tab != null ? tab + " " : ""} javascript \"${script}\"");
+  }
+
+  static void activate() {
+    tell("activate");
+  }
+
+  static void enterPresentationMode([tab]) {
+    tellTab("enter presentation mode ${tab}");
+  }
+
+  static void exitPresentationMode([tab]) {
+    tellTab("exit presentation mode ${tab}");
+  }
+
+  static GoogleChromeWindow getMainWindow() {
+    return new GoogleChromeWindow(1);
+  }
+
+  static GoogleChromeTab createTab(int window) {
+    return new GoogleChromeTab(window, parseAppleScriptRecord(tell("get id of (make new tab at end of tabs of window ${window})")));
+  }
+
+  static List<GoogleChromeWindow> getWindows() {
+    var r = tell("get index of every window");
+    return parseAppleScriptRecord(r).map((it) {
+      return new GoogleChromeWindow(it);
+    }).toList();
+  }
+
+  static List<GoogleChromeTab> getTabs(int id) {
+    return parseAppleScriptRecord(tell("get id of every tab of window ${id}")).map((it) => new GoogleChromeTab(id, it)).toList();
+  }
+
+  static String tell(String action) {
+    return Applications.tell(APP, action);
+  }
+
+  static String getTabName(int window, int tab) {
+    var r = tell("""
+    get tab whose id is ${tab} of window ${window}
+    """);
+
+    print(r);
+
+    return r;
+  }
+}
+
+class GoogleChromeWindow {
+  int id;
+
+  GoogleChromeWindow(this.id);
+
+  String getName() {
+    return parseAppleScriptRecord(GoogleChrome.tell("get name of window ${id}"));
+  }
+
+  List<GoogleChromeTab> getTabs() {
+    return GoogleChrome.getTabs(id);
+  }
+}
+
+class GoogleChromeTab {
+  int window;
+  int id;
+
+  GoogleChromeTab(this.window, this.id);
+
+  String getName() => GoogleChrome.getTabName(window, id);
+}
+
 class FinderWindow {
   dynamic id;
 
