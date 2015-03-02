@@ -1,4 +1,4 @@
-library osx._record_parser;
+library osx.record_parser;
 
 import "package:petitparser/petitparser.dart";
 
