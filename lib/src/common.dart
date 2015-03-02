@@ -9,7 +9,7 @@ class Domains {
   static const String FINDER = "com.apple.finder";
 }
 
-class Volume {
+class AudioVolume {
   static int getVolume() {
     return int.parse(runAppleScriptSync("output volume of (get volume settings)"));
   }
@@ -73,6 +73,52 @@ class System {
   static String runAdminShell(String command) {
     return runAppleScriptSync('do shell script "${command}" with administrator privileges');
   }
+}
+
+class Volumes {
+  static List<Volume> list() {
+    var disks = [];
+
+    void c(info) {
+      var disk = new Volume(info["VolumeName"] != null ? info["VolumeName"] : info["DeviceIdentifier"]);
+      disk.size = info["Size"];
+      disk.id = info["DeviceIdentifier"];
+
+      if (info["Partitions"] != null) {
+        for (var p in info["Partitions"]) {
+          disk.partitions.add(new VolumePartition(p["name"])..size = p["Size"]);
+        }
+      }
+
+      disks.add(disk);
+    }
+
+    var plist = PropertyLists.fromString(Process.runSync("diskutil", ["list", "-plist"]).stdout);
+
+    for (var d in plist["AllDisksAndPartitions"]) {
+      c(d);
+    }
+
+    return disks;
+  }
+
+  static Volume getMainVolume() => list().firstWhere((it) => it.name != it.id);
+}
+
+class VolumePartition {
+  final String name;
+  int size;
+
+  VolumePartition(this.name);
+}
+
+class Volume {
+  final String name;
+  int size;
+  String id;
+  List<VolumePartition> partitions = [];
+
+  Volume(this.name);
 }
 
 class Clipboard {

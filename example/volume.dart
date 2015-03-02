@@ -1,9 +1,9 @@
 import "package:osx/osx.dart";
 
 void main() {
-  print("Volume Level: ${Volume.getVolume()}");
-  Volume.mute();
-  print("Is Muted: ${Volume.isMuted()}");
-  Volume.unmute();
-  Volume.setVolume(Volume.getVolume() + 1);
+  print("Volume Level: ${AudioVolume.getVolume()}");
+  AudioVolume.mute();
+  print("Is Muted: ${AudioVolume.isMuted()}");
+  AudioVolume.unmute();
+  AudioVolume.setVolume(AudioVolume.getVolume() + 1);
 }
