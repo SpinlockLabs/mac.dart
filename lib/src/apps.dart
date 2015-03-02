@@ -318,6 +318,8 @@ class Applications {
     setFrontMost(name, true);
   }
 
+  static String getVersion(String name) => parseAppleScriptRecord(tell(name, "get version"));
+
   static int getWindowCount(String name) {
     return int.parse(tellApplicationSync(name, "count of Finder windows"));
   }
@@ -363,6 +365,8 @@ class Application {
   void quit() {
     Applications.quit(name);
   }
+
+  String getVersion() => Applications.getVersion(name);
 
   void reopen() {
     Applications.reopen(name);
@@ -413,5 +417,43 @@ class Keyboard {
 
   static void press(String key) {
     SystemEvents.key(key);
+  }
+}
+
+class Atom {
+  static void activate() {
+    tell("activate");
+  }
+
+  static void quit() {
+    tell("quit");
+  }
+
+  static void createDocument() {
+    tell("""
+    activate
+    delay 3
+    make new document
+    """);
+  }
+
+  static String tell(String action) {
+    return Applications.tell("Atom", "activate");
+  }
+
+  static bool isInstalled() => Applications.list().any((it) => it.name == "Atom");
+}
+
+class TextEdit {
+  static void activate() {
+    tell("activate");
+  }
+
+  static void quit() {
+    tell("quit");
+  }
+
+  static String tell(String action) {
+    return Applications.tell("TextEdit", "activate");
   }
 }
