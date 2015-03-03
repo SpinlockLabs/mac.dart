@@ -1,4 +1,4 @@
-build/
+/build
 packages
 pubspec.lock
 .idea/
@@ -15,8 +15,8 @@ out/
 .Trashes
 *.swp
 *~.nib
-build/helper.build
-build/Release/helper.*
+helper/build/helper.build/
+helper/build/Release/helper.*
 *.pbxuser
 *.perspective
 *.perspectivev3
