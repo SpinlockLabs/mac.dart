@@ -18,7 +18,18 @@ if args.count == 0 {
         println(" \(option): \(opts[option]!)")
     }
     println(" -server: Start Server")
+    println(" -command: Run Single Server Command")
     exit(1)
+}
+
+if args.count == 1 && args.first! == "-server" {
+    startServer()
+    exit(0)
+}
+
+if args.count == 2 && args.first! == "-command" {
+    executeServerCommand(JSON(string: args.last!))
+    exit(0)
 }
 
 var output = [String:AnyObject]()
@@ -38,9 +49,6 @@ for arg in args {
         output["apps"] = getApplications()
     case "-running":
         output["running"] = getRunningApplications()
-    case "-server":
-        startServer()
-        exit(0)
     default:
         println("Invalid Option: \(arg)")
         exit(1)

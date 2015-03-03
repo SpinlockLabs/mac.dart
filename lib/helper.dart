@@ -1,19 +1,32 @@
 library osx.helper;
 
+import "dart:convert";
 import "dart:io";
-import "package:caller_info/caller_info.dart";
 
 class Helper {
+  static File executable = new File("${Platform.environment["HOME"]}/Library/Dart/OSX/helper");
+
   static void init() {
-    var info = _getCallerInfo();
-    var n = info.file.toFilePath();
-    var sourceFile = new File(n);
-    var root = sourceFile.parent.parent;
-    var helperDir = new Directory("${root.path}/helper");
-
+    if (!executable.existsSync()) {
+      throw new Exception("Unable to initialize helper. Please run bin/setup.dart in the OSX.dart repository to install it.");
+    }
   }
-}
 
-CallerInfo _getCallerInfo() {
-  return new CallerInfo();
+  static dynamic send(Map<String, dynamic> input) {
+    var result = Process.runSync(executable.path, ["-command", JSON.encode(input)]);
+
+    if (result.exitCode != 0) {
+      throw new Exception("Failed to execute helper.");
+    }
+
+    return JSON.decode(result.stdout.trim());
+  }
+
+  static Map<String, dynamic> getSystemInformation() => send({
+    "type": "sysinfo"
+  });
+
+  static List<String> getInstalledApplications() => send({
+    "type": "applications"
+  });
 }

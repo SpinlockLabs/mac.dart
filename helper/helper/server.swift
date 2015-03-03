@@ -8,23 +8,36 @@ func startServer() {
         let data:NSData = standardInput.availableData
         let string:NSString = NSString(data: data, encoding: NSUTF8StringEncoding)!
         let json:JSON = JSON(string: string)
-        let type:String = json["type"].asString!
         
-        switch type {
-        case "sysinfo":
-            writeJSON(getSystemInfo())
-        case "apps":
-            writeJSON(getApplications())
-        case "running":
-            writeJSON(getRunningApplications())
-        case "stop":
+        if !executeServerCommand(json) {
             break loop
-        default:
-            writeJSON([
-                "error": "type.invalid"
-            ])
         }
     }
+}
+
+func executeServerCommand(json: JSON) -> Bool {
+    let type:String = json["type"].asString!
+
+    switch type {
+    case "sysinfo":
+        writeJSON(getSystemInfo())
+    case "apps":
+        writeJSON(getApplications())
+    case "running":
+        writeJSON(getRunningApplications())
+    case "activate":
+        activate(json["app"].asString!)
+        writeJSON([
+            "success": true
+        ])
+    case "stop":
+        return false
+    default:
+        writeJSON([
+            "error": "type.invalid"
+        ])
+    }
+    return true
 }
 
 func writeJSON(input: AnyObject) {
