@@ -16,6 +16,7 @@ out/
 *.swp
 *~.nib
 build/
+!build/Release/helper
 *.pbxuser
 *.perspective
 *.perspectivev3
