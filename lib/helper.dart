@@ -4,12 +4,25 @@ import "dart:convert";
 import "dart:io";
 
 class Helper {
-  static File executable = new File("${Platform.environment["HOME"]}/Library/Dart/OSX/helper");
+  static File executable = init();
 
-  static void init() {
-    if (!executable.existsSync()) {
-      throw new Exception("Unable to initialize helper. Please run bin/setup.dart in the OSX.dart repository to install it.");
+  static File init() {
+    var scriptUri = Platform.script;
+    var scriptPath = scriptUri.toFilePath();
+    var scriptFile = new File(scriptPath);
+    var dir = scriptFile.parent;
+    var pkgDir = new Directory("${dir.path}/packages");
+    if (Platform.packageRoot != null && Platform.packageRoot.isNotEmpty) {
+      pkgDir = new Directory(Platform.packageRoot);
     }
+
+    var exe = new File("${pkgDir.path}/osx/compiled/helper");
+
+    if (!exe.existsSync()) {
+      throw new Exception("Unable to initialize helper. Failed to find compiled helper.");
+    }
+
+    return exe;
   }
 
   static dynamic send(Map<String, dynamic> input) {

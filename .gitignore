@@ -15,8 +15,7 @@ out/
 .Trashes
 *.swp
 *~.nib
-helper/build/helper.build/
-helper/build/Release/helper.*
+build/
 *.pbxuser
 *.perspective
 *.perspectivev3
