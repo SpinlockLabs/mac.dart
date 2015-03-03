@@ -26,9 +26,14 @@ func executeServerCommand(json: JSON) -> Bool {
     case "running":
         writeJSON(getRunningApplications())
     case "activate":
-        activate(json["app"].asString!)
+        let result = activate(json["app"].asString!)
         writeJSON([
-            "success": true
+            "success": result
+        ])
+    case "quit":
+        let result = quit(json["app"].asString!)
+        writeJSON([
+            "success": result
         ])
     case "stop":
         return false
