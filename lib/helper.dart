@@ -29,4 +29,9 @@ class Helper {
   static List<String> getInstalledApplications() => send({
     "type": "applications"
   });
+
+  static bool activate(String application) => send({
+    "type": "activate",
+    "app": application
+  })["success"];
 }
