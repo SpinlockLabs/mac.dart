@@ -352,15 +352,15 @@ class FinderWindow {
 
 class TaskManager {
   static Set<String> getOpenTasks() {
-    return runAppleScriptSync('''
+    return parseAppleScriptRecord(runAppleScriptSync('''
     tell application "System Events" to get name of every process whose background only is false
-    ''').split(", ").toSet();
+    ''')).toSet();
   }
 
   static Set<String> getTasks() {
-    return runAppleScriptSync('''
+    return parseAppleScriptRecord(runAppleScriptSync('''
     tell application "System Events" to get name of every process
-    ''').split(", ").toSet();
+    ''')).toSet();
   }
 
   static Set<int> getIds(String name) => runAppleScriptSync("""

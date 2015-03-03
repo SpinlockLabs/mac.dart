@@ -34,4 +34,9 @@ class Helper {
     "type": "activate",
     "app": application
   })["success"];
+
+  static bool quit(String application) => send({
+    "type": "quit",
+    "app": application
+  })["success"];
 }

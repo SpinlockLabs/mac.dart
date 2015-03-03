@@ -1,4 +1,5 @@
 import Foundation
+import Cocoa
 import AppKit
 
 func activate(app: String) -> Bool {

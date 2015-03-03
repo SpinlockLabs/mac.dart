@@ -210,7 +210,11 @@ extension JSON {
     }
     /// gives NSNull if self holds it. nil otherwise
     public var asNull:NSNull? {
-        return _value is NSNull ? JSON.null : nil
+        if _value is NSNull {
+            return JSON.null
+        } else {
+            return nil
+        }
     }
     /// gives Bool if self holds it. nil otherwise
     public var asBool:Bool? {
