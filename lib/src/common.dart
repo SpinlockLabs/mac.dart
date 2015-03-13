@@ -49,7 +49,7 @@ class AudioVolume {
   }
 
   static bool isMuted() {
-    return runAppleScriptSync("output of muted of (get volume settings)") == "true";
+    return runAppleScriptSync("output muted of (get volume settings)") == "true";
   }
 
   static void setVolume(int volume) {
