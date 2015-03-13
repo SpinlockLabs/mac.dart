@@ -1,7 +1,7 @@
 import "package:osx/osx.dart";
 
 void main() {
-  var result = UI.displayDialog("Hello World", buttons: [
+  var result = UI.displayDialogSync("Hello World", buttons: [
     "Ok",
     "Not Ok"
   ]);

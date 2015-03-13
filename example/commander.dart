@@ -40,7 +40,7 @@ void main() {
 }
 
 void select() {
-  var action = SpeechRecognizer.select([
+  var action = SpeechRecognizer.selectSync([
     "Open Application",
     "Go to Sleep",
     "Battery Level",
@@ -86,7 +86,7 @@ void select() {
   } else if (action == "Change my name") {
     var name = Data.get("name", "The User");
     try {
-      var result = UI.displayDialog("Enter Name", buttons: ["Ok"], defaultAnswer: name);
+      var result = UI.displayDialogSync("Enter Name", buttons: ["Ok"], defaultAnswer: name);
       if (!result.gaveUp) {
         Data.set("name", result.text);
         say("I will now call you ${result.text}");
@@ -102,7 +102,7 @@ void select() {
 }
 
 void closeEverything() {
-  var result = SpeechRecognizer.select([
+  var result = SpeechRecognizer.selectSync([
     "Yes",
     "No",
     "Go Back"
@@ -118,7 +118,7 @@ void closeEverything() {
 
 void open() {
   var apps = Applications.list().map((it) => it.name).toList();
-  var result = SpeechRecognizer.select([
+  var result = SpeechRecognizer.selectSync([
     "What can I open?",
     "Go Back"
   ]..addAll(apps), prompt: "What would you like to open?");

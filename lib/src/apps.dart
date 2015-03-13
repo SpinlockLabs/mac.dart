@@ -16,7 +16,7 @@ class Finder {
   }
 
   static String tell(String action) {
-    return Applications.tell("Finder", action);
+    return Applications.tellSync("Finder", action);
   }
 
   static FinderWindow getFrontWindow() {
@@ -206,7 +206,7 @@ class GoogleChrome {
   }
 
   static String tell(String action) {
-    return Applications.tell(APP, action);
+    return Applications.tellSync(APP, action);
   }
 
   static GoogleChromeTab getActiveTab(int window) {
@@ -428,7 +428,7 @@ class Applications {
   }
 
   static String tellUI(String name, String action) {
-    return tell("System Events", """
+    return tellSync("System Events", """
     tell process "${name}"
       ${action}
     end tell
@@ -443,18 +443,18 @@ class Applications {
     setFrontMost(name, true);
   }
 
-  static String getVersion(String name) => parseAppleScriptRecord(tell(name, "get version"));
+  static String getVersion(String name) => parseAppleScriptRecord(tellSync(name, "get version"));
 
   static int getWindowCount(String name) {
     return int.parse(tellApplicationSync(name, "count of Finder windows"));
   }
 
   static void closeAll(String name) {
-    tell(name, "close every window");
+    tellSync(name, "close every window");
   }
 
   static void reopen(String name) {
-    tell(name, "reopen");
+    tellSync(name, "reopen");
   }
 
   static Set<Application> list({bool normal: true}) {
@@ -472,7 +472,8 @@ class Applications {
   static bool isInstalled(String name) => list().map((it) => it.name).contains(name);
   static Application get(String name) => new Application(name);
 
-  static String tell(String name, String action) => tellApplicationSync(name, action);
+  static String tellSync(String name, String action) => tellApplicationSync(name, action);
+  static Future<String> tell(String name, String action) => tellApplication(name, action);
 }
 
 class Application {
@@ -498,7 +499,7 @@ class Application {
   }
 
   String tell(String action) {
-    return Applications.tell(name, action);
+    return Applications.tellSync(name, action);
   }
 
   String getPath() {
@@ -515,7 +516,7 @@ class Application {
 
 class SystemEvents {
   static String tell(String action) {
-    return Applications.tell("System Events", action);
+    return Applications.tellSync("System Events", action);
   }
 
   static void keystroke(String input) {
@@ -563,7 +564,7 @@ class Atom {
   }
 
   static String tell(String action) {
-    return Applications.tell("Atom", "activate");
+    return Applications.tellSync("Atom", "activate");
   }
 
   static bool isInstalled() => Applications.list().any((it) => it.name == "Atom");
@@ -579,6 +580,6 @@ class TextEdit {
   }
 
   static String tell(String action) {
-    return Applications.tell("TextEdit", "activate");
+    return Applications.tellSync("TextEdit", "activate");
   }
 }

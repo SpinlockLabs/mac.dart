@@ -1,7 +1,7 @@
 part of osx;
 
 class UI {
-  static DialogResult displayDialog(String text, {List<String> buttons, icon, String defaultAnswer, int giveUpAfter, defaultButton: 1}) {
+  static DialogResult displayDialogSync(String text, {List<String> buttons, icon, String defaultAnswer, int giveUpAfter, defaultButton: 1}) {
     var script = 'display dialog "${text}"';
 
     script += _build({
@@ -21,7 +21,27 @@ class UI {
     return r;
   }
 
-  static File chooseFile({String prompt, List<String> types, String defaultLocation, bool invisibles: false}) {
+  static Future<DialogResult> displayDialog(String text, {List<String> buttons, icon, String defaultAnswer, int giveUpAfter, defaultButton: 1}) async {
+    var script = 'display dialog "${text}"';
+
+    script += _build({
+      'default answer "#"': defaultAnswer,
+      'with icon #': icon,
+      'buttons #': buttons,
+      'default button #': defaultButton,
+      'giving up after #': giveUpAfter,
+    });
+
+    var result = await runAppleScript(script);
+    var record = parseAppleScriptRecord(result);
+    var r = new DialogResult();
+    r.text = record["text returned"];
+    r.button = record["button returned"];
+    r.gaveUp = record["gave up"];
+    return r;
+  }
+
+  static File chooseFileSync({String prompt, List<String> types, String defaultLocation, bool invisibles: false}) {
     var script = "POSIX path of (choose file";
 
     script += _build({
@@ -35,7 +55,21 @@ class UI {
     return new File(parseAppleScriptRecord(runAppleScriptSync(script)));
   }
 
-  static Directory chooseFolder({String prompt, String defaultLocation, bool invisibles: false}) {
+  static Future<File> chooseFile({String prompt, List<String> types, String defaultLocation, bool invisibles: false}) async {
+    var script = "POSIX path of (choose file";
+
+    script += _build({
+      'with prompt #': prompt,
+      'of type #': types,
+      'default location #': defaultLocation,
+      'invisibles #': invisibles
+    });
+
+    script += ')';
+    return new File(parseAppleScriptRecord(await runAppleScript(script)));
+  }
+
+  static Directory chooseFolderSync({String prompt, String defaultLocation, bool invisibles: false}) {
     var script = "POSIX path of (choose folder";
 
     script += _build({
@@ -48,7 +82,20 @@ class UI {
     return new Directory(parseAppleScriptRecord(runAppleScriptSync(script)));
   }
 
-  static Application chooseApplication({String title, String prompt}) {
+  static Future<Directory> chooseFolder({String prompt, String defaultLocation, bool invisibles: false}) async {
+    var script = "POSIX path of (choose folder";
+
+    script += _build({
+      'with prompt #': prompt,
+      'default location #': defaultLocation,
+      'invisibles #': invisibles
+    });
+
+    script += ')';
+    return new Directory(parseAppleScriptRecord(await runAppleScript(script)));
+  }
+
+  static Application chooseApplicationSync({String title, String prompt}) {
     var script = "name of (choose application";
 
     script += _build({
@@ -59,6 +106,19 @@ class UI {
     script += ")";
 
     return new Application(runAppleScriptSync(script));
+  }
+
+  static Future<Application> chooseApplication({String title, String prompt}) async {
+    var script = "name of (choose application";
+
+    script += _build({
+      'with title "${title}"': title,
+      'with prompt "${prompt}"': prompt
+    });
+
+    script += ")";
+
+    return new Application(parseAppleScriptRecord(await runAppleScript(script)));
   }
 
   static String _build(Map<String, dynamic> input) {
