@@ -469,11 +469,93 @@ class Applications {
     }
   }
 
+  static String guessPath(String name) {
+    var fname = "${name}.app";
+    var search = [
+      "/Applications",
+      "/System/Library/CoreServices",
+      "${SystemInformation.getHomeDirectory()}/Applications"
+    ];
+
+    for (var p in search) {
+      var dir = new Directory("${p}/${fname}");
+
+      if (dir.existsSync()) {
+        return dir.path;
+      }
+    }
+
+    return null;
+  }
+
+  static ApplicationInfo getInfoPlist(String name) {
+    return new ApplicationInfo(PropertyLists.fromFile(getAppFile(name, "Contents/Info.plist")));
+  }
+
+  static File getAppFile(String name, String path) {
+    return new File(guessPath(name) + "/${path}");
+  }
+
   static bool isInstalled(String name) => list().map((it) => it.name).contains(name);
   static Application get(String name) => new Application(name);
 
   static String tellSync(String name, String action) => tellApplicationSync(name, action);
   static Future<String> tell(String name, String action) => tellApplication(name, action);
+}
+
+class ApplicationInfo {
+  final Map info;
+
+  ApplicationInfo(this.info);
+
+  String getBuildMachineOSBuild() {
+    return getProperty("BuildMachineOSBuild");
+  }
+
+  String getBundleDisplayName() {
+    return getProperty("CFBundleDisplayName");
+  }
+
+  String getBundleName() {
+    return getProperty("CFBundleName");
+  }
+
+  String getBundleIdentifier() {
+    return getProperty("CFBundleIdentifier");
+  }
+
+  String getBundleVersion() {
+    return getProperty("CFBundleVersion");
+  }
+
+  String getBundleShortVersion() {
+    return getProperty("CFBundleShortVersionString");
+  }
+
+  String getBundleIcon() {
+    return getProperty("CFBundleIconFile");
+  }
+
+  String getBundlePackageType() {
+    return getProperty("CFBundlePackageType");
+  }
+
+  String getBundleExecutable() {
+    return getProperty("CFBundleExecutable");
+  }
+
+  String getSCMRevision() {
+    return getProperty("SCMRevision");
+  }
+
+  String getProperty(String name) {
+    return info[name];
+  }
+
+  @override
+  String toString() {
+    return new JsonEncoder.withIndent("  ").convert(info);
+  }
 }
 
 class Application {
@@ -567,7 +649,7 @@ class Atom {
     return Applications.tellSync("Atom", "activate");
   }
 
-  static bool isInstalled() => Applications.list().any((it) => it.name == "Atom");
+  static bool isInstalled() => Applications.isInstalled("Atom");
 }
 
 class TextEdit {

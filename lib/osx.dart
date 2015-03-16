@@ -1,6 +1,7 @@
 library osx;
 
 import "dart:async";
+import "dart:convert";
 import "dart:io";
 import "dart:typed_data";
 
