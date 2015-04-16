@@ -4,9 +4,10 @@ Tools for working with OSX
 
 ## Features
 
-- Dictation
-- Application Interaction
-- Scripting
+- Easy to use
+- Dictation (Speech Recognition and TTS)
+- Application Interaction (High Level API for working with applications)
+- Scripting Helpers
 - System Information
 - User Interface
 
