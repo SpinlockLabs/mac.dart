@@ -1,5 +1,5 @@
 import "package:osx/osx.dart";
 
-void main() {
-  say("Hello World");
+main() async {
+  await say("Hello World");
 }

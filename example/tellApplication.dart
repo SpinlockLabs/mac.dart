@@ -1,5 +1,5 @@
 import "package:osx/osx.dart";
 
-void main() {
-  tellApplicationSync("Google Chrome", "activate");
+main() async {
+  await tellApplication("Google Chrome", "activate");
 }
