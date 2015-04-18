@@ -92,6 +92,10 @@ class Computer {
   static void wake() {
     Process.start("caffeinate", ["-u"]).then((proc) => proc.kill());
   }
+
+  static Duration getUptime() {
+    return syscall.getSystemUptime();
+  }
 }
 
 class System {
@@ -105,6 +109,14 @@ class System {
 
   static String runAdminShell(String command) {
     return runAppleScriptSync('do shell script "${command}" with administrator privileges');
+  }
+
+  static List<syscall.User> getUsers() {
+    return syscall.getUsernames().map((it) => syscall.getUser(it)).toList();
+  }
+
+  static syscall.User getCurrentUser() {
+    return syscall.getCurrentUser();
   }
 }
 

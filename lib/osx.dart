@@ -11,6 +11,8 @@ import "package:crypto/crypto.dart";
 import "package:osx/utils.dart";
 import "package:osx/record_parser.dart";
 
+import "package:syscall/syscall.dart" as syscall;
+
 export "dart:io" show sleep;
 
 part "src/apps.dart";
