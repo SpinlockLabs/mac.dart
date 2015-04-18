@@ -1,6 +1,6 @@
 part of osx.utils;
 
-Future<String> getText(String url) async {
+Future<String> fetch(String url) async {
   var uri = Uri.parse(url);
   var client = new HttpClient();
   var request = await client.getUrl(uri);
@@ -14,8 +14,8 @@ Future<String> getText(String url) async {
   });
 }
 
-Future<dynamic> getJSON(String url) async {
-  var text = await getText(url);
+Future<dynamic> fetchJSON(String url) async {
+  var text = await fetch(url);
   var json = JSON.decode(text);
   return json;
 }

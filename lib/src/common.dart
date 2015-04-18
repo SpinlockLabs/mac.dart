@@ -182,12 +182,25 @@ class Battery {
     return _info().contains("charging;");
   }
 
-  static bool isPluggedIn() {
-    var info = _info();
-    return info.contains("charging;") || info.contains("charged;");
+  static bool isCharged() {
+    return _info().contains("charged;");
   }
 
+  static bool isPluggedIn() {
+    return isCharging() || isCharged();
+  }
+
+  static int _lastUpdate;
+  static String _infoString;
+
   static String _info() {
-    return Process.runSync("pmset", ["-g", "batt"]).stdout.split("\n")[1].trim();
+    var now = new DateTime.now().millisecondsSinceEpoch;
+
+    if (_lastUpdate != null && (now - _lastUpdate) < 300) {
+      return _infoString;
+    }
+
+    _lastUpdate = now;
+    return _infoString = Process.runSync("pmset", ["-g", "batt"]).stdout.split("\n")[1].trim();
   }
 }

@@ -79,6 +79,8 @@ void select() {
     say("Your battery is at ${Battery.getLevel()}%");
   } else if (action == "Repeat That") {
     select();
+  } else if (action == "Open Slack") {
+    Applications.activate("Slack");
   } else if (action == "What is my name?" || action == "What do you call me?") {
     var name = Data.get("name", "The User");
 
