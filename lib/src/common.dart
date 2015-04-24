@@ -150,6 +150,27 @@ class Volumes {
   static Volume getMainVolume() => list().firstWhere((it) => it.name != it.id);
 }
 
+class Geolocation {
+  static LocationInfo getLocation() {
+    var info = getLocationInfo();
+    return new LocationInfo()
+      ..latitude = info["latitude"]
+      ..longitude = info["longitude"]
+      ..accuracy = info["accuracy (m)"]
+      ..timestamp = info["timestamp"];
+  }
+}
+
+class LocationInfo {
+  double latitude;
+  double longitude;
+  double accuracy;
+  String timestamp;
+
+  @override
+  String toString() => "Location(latitude = ${latitude}, longitude = ${longitude}, accuracy = ${accuracy}, timestamp = ${timestamp})";
+}
+
 class Network {
   static String getNetworkName(String interface) {
     try {
