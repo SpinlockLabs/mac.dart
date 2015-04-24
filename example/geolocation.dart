@@ -1,5 +1,5 @@
 import "package:osx/osx.dart";
 
-void main() {
+main() async {
   print(await Geolocation.getLocation());
 }
