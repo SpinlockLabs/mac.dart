@@ -9,6 +9,14 @@ part "src/utils/http.dart";
 part "src/utils/time.dart";
 part "src/utils/files.dart";
 
+String getStdoutOf(String exe, List<String> args) {
+  var result = Process.runSync(exe, args);
+  if (result.exitCode != 0) {
+    throw new Exception("Failed to get stdout of ${exe} ${args.join(" ")}");
+  }
+  return result.stdout.trim();
+}
+
 String generateRandomString(int length) {
   var random = new Random();
   var chars = [

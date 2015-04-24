@@ -150,6 +150,32 @@ class Volumes {
   static Volume getMainVolume() => list().firstWhere((it) => it.name != it.id);
 }
 
+class Network {
+  static String getNetworkName(String interface) {
+    try {
+      var info = getStdoutOf("/usr/sbin/networksetup", ["-getairportnetwork", interface]);
+      return info.substring("Current Wi-Fi Network: ".length);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static int getSignalStrength() {
+    try {
+      var info = getStdoutOf("/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport", ["-I"]);
+      return int.parse(
+          info
+            .split("\n")
+            .map((it) => it.trim())
+            .firstWhere((it) => it.startsWith("agrCtlRSSI"))
+            .substring("agrCtlRSSI: ".length)
+      );
+    } catch (e) {
+      return null;
+    }
+  }
+}
+
 class VolumePartition {
   final String name;
   int size;
