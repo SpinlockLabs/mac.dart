@@ -1,5 +1,7 @@
 import "package:crypto/crypto.dart";
 
+import "dart:async";
+
 import "dart:io";
 
 /// Base64 Encoded Version of the Executable
@@ -583,9 +585,9 @@ AF9vYmplY3Rfc2V0SXZhcgBfcHJvdG9jb2xfZ2V0TWV0aG9kRGVzY3JpcHRpb24AX3N0cmNtcABk
 eWxkX3N0dWJfYmluZGVyAAAAAAA=
 """;
 
-Map<String, dynamic> getLocationInfo() {
+Future<Map<String, dynamic>> getLocationInfo() async {
   _ensureExecutable();
-  var result = Process.runSync(_exePath, []);
+  var result = await Process.run(_exePath, []);
   if (result.exitCode != 0) {
     throw new Exception("Failed to get geolocation information.");
   }

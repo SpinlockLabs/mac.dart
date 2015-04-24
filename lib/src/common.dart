@@ -151,8 +151,8 @@ class Volumes {
 }
 
 class Geolocation {
-  static LocationInfo getLocation() {
-    var info = getLocationInfo();
+  static Future<LocationInfo> getLocation() async {
+    var info = await getLocationInfo();
     return new LocationInfo()
       ..latitude = info["latitude"]
       ..longitude = info["longitude"]
