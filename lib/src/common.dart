@@ -98,9 +98,81 @@ class Computer {
   }
 }
 
+class ProfilerData {
+  final Map data;
+
+  ProfilerData(this.data);
+
+  String get name => data["_name"];
+
+  List<ProfilerData> get children {
+    if (data["_items"] == null) {
+      return [];
+    } else {
+      return data["_items"].map((x) => new ProfilerData(x)).toList();
+    }
+  }
+
+  bool get hasChildren => data.containsKey("_items");
+
+  Map<String, dynamic> get metrics {
+    List<String> keys = data.keys.where((x) => !x.startsWith("_")).toList();
+    Map x = {};
+    for (var n in keys) {
+      x[n] = data[n];
+    }
+    return x;
+  }
+}
+
+class SystemProfiler {
+  static const String HARDWARE_TYPE = "SPHardwareDataType";
+
+  static Map<String, dynamic> readSimpleMap(String dataType, {bool cache: false}) {
+    if (cache && _cache.containsKey(dataType)) {
+      return _cache[dataType];
+    }
+
+    var value = PropertyLists.fromString(
+        getStdoutOf("system_profiler", ["-xml", dataType])
+    ).first["_items"].fold({}, (a, b) {
+      a.addAll(b);
+      return a;
+    });
+
+    if (cache) {
+      _cache[dataType] = value;
+    }
+
+    return value;
+  }
+
+  static ProfilerData read(String dataType) {
+    var value = new ProfilerData(PropertyLists.fromString(
+        getStdoutOf("system_profiler", ["-xml", "-detailLevel", "full", dataType])
+    ).first);
+
+    return value;
+  }
+
+  static Map<String, dynamic> _cache = {};
+}
+
 class System {
   static void beep([int times = 1]) {
     runAppleScriptSync("beep ${times}");
+  }
+
+  static String getMachineName() {
+    return SystemProfiler.readSimpleMap(SystemProfiler.HARDWARE_TYPE, cache: true)["machine_name"];
+  }
+
+  static String getCpuType() {
+    return SystemProfiler.readSimpleMap(SystemProfiler.HARDWARE_TYPE, cache: true)["cpu_type"];
+  }
+
+  static String getSerialNumber() {
+    return SystemProfiler.readSimpleMap(SystemProfiler.HARDWARE_TYPE, cache: true)["serial_number"];
   }
 
   static String runShell(String command) {
