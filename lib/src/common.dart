@@ -5,6 +5,17 @@ class Common {
   static void setHiddenFilesShown(bool shown) => Defaults.set(Domains.FINDER, "AppleShowAllFiles", shown);
 }
 
+class Homebrew {
+  static bool isInstalled() {
+    try {
+      getStdoutOf("brew", ["--version"]);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+}
+
 class Opener {
   static void open(String path) {
     var result = Process.runSync("open", [path]);
@@ -91,10 +102,6 @@ class Computer {
 
   static void wake() {
     Process.start("caffeinate", ["-u"]).then((proc) => proc.kill());
-  }
-
-  static Duration getUptime() {
-    return syscall.getSystemUptime();
   }
 }
 
@@ -183,12 +190,8 @@ class System {
     return runAppleScriptSync('do shell script "${command}" with administrator privileges');
   }
 
-  static List<syscall.User> getUsers() {
-    return syscall.getUsernames().map((it) => syscall.getUser(it)).toList();
-  }
-
-  static syscall.User getCurrentUser() {
-    return syscall.getCurrentUser();
+  static String getCurrentUser() {
+    return tellApplicationSync("System Events", "name of current user");
   }
 }
 

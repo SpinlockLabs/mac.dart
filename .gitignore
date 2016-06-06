@@ -22,3 +22,4 @@ build/
 *.xcuserstate
 project.xcworkspace/
 xcuserdata/
+.gitignore
