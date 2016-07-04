@@ -1,4 +1,4 @@
-import "package:osx/osx.dart";
+import "package:mac/mac.dart";
 
 List<String> features = [
   "User Interface Elements",
@@ -15,7 +15,7 @@ List<String> features = [
 ];
 
 void main() {
-  say("Dart + OSX = Win");
+  say("Dart + macOS = Win");
   say("Here are my features:");
   features.forEach(say);
 }

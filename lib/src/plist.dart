@@ -1,4 +1,4 @@
-part of osx;
+part of mac;
 
 class _PropertyListParser {
   _handleElement(libxml.XmlElement elem){

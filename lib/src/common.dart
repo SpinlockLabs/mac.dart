@@ -1,4 +1,4 @@
-part of osx;
+part of mac;
 
 class Common {
   static bool areHiddenFilesShown() => Defaults.get(Domains.FINDER, "AppleShowAllFiles");

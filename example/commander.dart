@@ -1,7 +1,7 @@
 import "dart:io";
 import "dart:convert";
-import "package:osx/osx.dart";
-import "package:osx/utils.dart";
+import "package:mac/mac.dart";
+import "package:mac/utils.dart";
 
 class Data {
   static Map<String, String> storage = {};
@@ -53,7 +53,7 @@ void select() {
     "Open Launchpad",
     "What time is it?",
     "Close Everything",
-    "What version of OSX do I have?",
+    "What version of macOS do I have?",
     "What is my computer named?"
   ], prompt: "What would you like?");
 
@@ -73,8 +73,8 @@ void select() {
     closeEverything();
   } else if (action == "What is my computer named?") {
     say("Your computer is named ${SystemInformation.getComputerName()}");
-  } else if (action == "What version of OSX do I have?") {
-    say("You have Mac OSX v${SystemInformation.getVersion()}");
+  } else if (action == "What version of macOS do I have?") {
+    say("You have macOS v${SystemInformation.getVersion()}");
   } else if (action == "Battery Level") {
     say("Your battery is at ${Battery.getLevel()}%");
   } else if (action == "Repeat That") {

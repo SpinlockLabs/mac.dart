@@ -1,6 +1,6 @@
 /// Example of Interacting with other Application UI
 
-import "package:osx/osx.dart";
+import "package:mac/mac.dart";
 
 void main() {
   Applications.makeFrontMost("Google Chrome");

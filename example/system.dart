@@ -1,7 +1,7 @@
-import "package:osx/osx.dart";
+import "package:mac/mac.dart";
 
 void main() {
-  print("Mac OSX Version: ${SystemInformation.getVersion()}");
+  print("macOS Version: ${SystemInformation.getVersion()}");
   print("Computer Name: ${SystemInformation.getComputerName()}");
   print("Hostname: ${SystemInformation.getHostName()}");
 }

@@ -1,4 +1,4 @@
-part of osx.utils;
+part of mac.utils;
 
 class Files {
   static File getTempFile(String content) {

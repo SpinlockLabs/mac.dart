@@ -1,4 +1,4 @@
-part of osx.utils;
+part of mac.utils;
 
 Future<String> fetch(String url) async {
   var uri = Uri.parse(url);

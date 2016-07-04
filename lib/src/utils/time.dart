@@ -1,4 +1,4 @@
-part of osx.utils;
+part of mac.utils;
 
 /**
  * Creates a Friendly Date and Time

@@ -1,4 +1,4 @@
-library osx.utils;
+library mac.utils;
 
 import "dart:async";
 import "dart:io";

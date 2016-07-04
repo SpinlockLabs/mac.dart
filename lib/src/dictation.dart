@@ -1,4 +1,4 @@
-part of osx;
+part of mac;
 
 class SpeechRecognizer {
   static String selectSync(List<String> commands, {String prompt}) {

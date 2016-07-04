@@ -1,4 +1,4 @@
-import "package:osx/osx.dart";
+import "package:mac/mac.dart";
 
 main() async {
   var result = await UI.displayDialog("Hello World", buttons: [

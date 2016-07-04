@@ -1,4 +1,4 @@
-part of osx;
+part of mac;
 
 class UI {
   static DialogResult displayDialogSync(String text, {List<String> buttons, icon, String defaultAnswer, int giveUpAfter, defaultButton: 1}) {

@@ -1,4 +1,4 @@
-part of osx;
+part of mac;
 
 class Defaults {
   static List<String> listDomains() {

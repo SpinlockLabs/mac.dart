@@ -1,4 +1,4 @@
-import "package:osx/osx.dart";
+import "package:mac/mac.dart";
 
 void main() {
   print("Network Name: ${Network.getNetworkName("en0")}");

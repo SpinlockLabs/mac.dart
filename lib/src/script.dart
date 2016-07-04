@@ -1,4 +1,4 @@
-part of osx;
+part of mac;
 
 Future<String> runAppleScript(String input) async {
   var result = await Process.run("osascript", ["-ss", "-e", input]);

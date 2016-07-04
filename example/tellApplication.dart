@@ -1,4 +1,4 @@
-import "package:osx/osx.dart";
+import "package:mac/mac.dart";
 
 main() async {
   await tellApplication("Google Chrome", "activate");

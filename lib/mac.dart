@@ -1,4 +1,4 @@
-library osx;
+library mac;
 
 import "dart:async";
 import "dart:convert";
@@ -8,8 +8,8 @@ import "dart:typed_data";
 import "package:xml/xml.dart" as libxml;
 import "package:crypto/crypto.dart";
 
-import "package:osx/utils.dart";
-import "package:osx/record_parser.dart";
+import "package:mac/utils.dart";
+import "package:mac/record_parser.dart";
 
 import "src/where_am_i.dart";
 
