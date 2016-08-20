@@ -1,7 +1,5 @@
-import "package:crypto/crypto.dart";
-
 import "dart:async";
-
+import "dart:convert";
 import "dart:io";
 
 /// Base64 Encoded Version of the Executable
@@ -589,7 +587,9 @@ Future<Map<String, dynamic>> getLocationInfo() async {
   _ensureExecutable();
   var result = await Process.run(_exePath, []);
   if (result.exitCode != 0) {
-    throw new Exception("Failed to get geolocation information.");
+    throw new Exception(
+      "Failed to get geolocation: ${result.stdout.toString().trim()}"
+    );
   }
   List<String> lines = result.stdout.split("\n");
   var i = 0;
@@ -625,9 +625,16 @@ void _ensureExecutable() {
   var file = new File(_exePath);
   if (!file.existsSync()) {
     file.createSync(recursive: true);
-    file.writeAsBytesSync(CryptoUtils.base64StringToBytes(_EXECUTABLE));
+    file.writeAsBytesSync(BASE64.decode(_EXECUTABLE.replaceAll("\n", "")));
     Process.runSync("chmod", ["+x", _exePath]);
   }
 }
 
-String _exePath = "${Platform.environment["HOME"]}/Library/Application Support/Dart/OSX/whereami";
+String _exePath = [
+  Platform.environment["HOME"],
+  "Library",
+  "Application Support",
+  "Dart",
+  "MacOS",
+  "whereami"
+].join("/");

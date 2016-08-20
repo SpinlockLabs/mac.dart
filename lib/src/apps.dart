@@ -407,16 +407,16 @@ class Dashboard {
 }
 
 class Applications {
-  static void activate(String name) {
-    tellApplication(name, """
+  static Future activate(String name) async {
+    await tellApplication(name, """
     ignoring application responses
       activate
     end ignoring
     """);
   }
 
-  static void quit(String name) {
-    tellApplication(name, """
+  static Future quit(String name) async {
+    await tellApplication(name, """
     ignoring application responses
       quit
     end ignoring

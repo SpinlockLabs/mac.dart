@@ -1,29 +1,32 @@
 part of mac;
 
 class _PropertyListParser {
-  _handleElement(libxml.XmlElement elem){
+  _handleElement(libxml.XmlElement elem) {
     switch (elem.name.local) {
-      case 'string':
+      case "string":
         return elem.text;
-      case 'real':
+      case "real":
         return double.parse(elem.text);
-      case 'integer':
+      case "integer":
         return int.parse(elem.text);
-      case 'true':
+      case "true":
         return true;
-      case 'false':
+      case "false":
         return false;
-      case 'date':
+      case "date":
         return DateTime.parse(elem.text);
-      case 'data':
-        var str = elem.text.trim().replaceAll(" ", "").replaceAll("\n", "").replaceAll("\t", "");
-        return new Uint8List.fromList(CryptoUtils.base64StringToBytes(str));
-      case 'array':
+      case "data":
+        var str = elem.text.trim()
+          .replaceAll(" ", "")
+          .replaceAll("\n", "")
+          .replaceAll("\t", "");
+        return new Uint8List.fromList(BASE64.decode(str));
+      case "array":
         return elem.children
         .where(_isElement)
         .map(_handleElement)
         .toList();
-      case 'dict':
+      case "dict":
         return _handleDict(elem);
     }
   }
@@ -31,10 +34,10 @@ class _PropertyListParser {
   Map _handleDict(libxml.XmlElement elem){
     var children = elem.children.where(_isElement);
     var key = children
-    .where((elem) => elem.name.local == 'key')
+    .where((elem) => elem.name.local == "key")
     .map((elem) => elem.text);
     var values = children
-    .where((elem) => elem.name.local != 'key')
+    .where((elem) => elem.name.local != "key")
     .map(_handleElement);
     return new Map.fromIterables(key, values);
   }
@@ -84,7 +87,7 @@ class PropertyLists {
         builder.element(it.toString());
       } else if (it is List<int>) {
         builder.element("data", nest: () {
-          builder.text(CryptoUtils.bytesToBase64(it));
+          builder.text(BASE64.encode(it));
         });
       } else if (it is List) {
         builder.element("array", nest: () {

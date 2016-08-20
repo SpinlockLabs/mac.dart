@@ -1,7 +1,8 @@
 import "package:mac/mac.dart";
+import "dart:async";
 
-void main() {
+main() async {
   Launchpad.activate();
-  sleep(new Duration(seconds: 1));
+  await new Future.delayed(const Duration(seconds: 3));
   Launchpad.close();
 }

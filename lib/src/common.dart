@@ -250,6 +250,9 @@ class Network {
   static String getNetworkName(String interface) {
     try {
       var info = getStdoutOf("/usr/sbin/networksetup", ["-getairportnetwork", interface]);
+      if (info.contains("not associated with an AirPort network")) {
+        return null;
+      }
       return info.substring("Current Wi-Fi Network: ".length);
     } catch (e) {
       return null;
@@ -299,7 +302,9 @@ class Clipboard {
   }
 
   static String get() {
-    return parseAppleScriptRecord(runAppleScriptSync("paragraphs of (get the clipboard)")).join("\n").trim();
+    return parseAppleScriptRecord(
+      runAppleScriptSync("paragraphs of (get the clipboard)")
+    ).join("\n").trim();
   }
 }
 
@@ -335,6 +340,9 @@ class Battery {
     }
 
     _lastUpdate = now;
-    return _infoString = Process.runSync("pmset", ["-g", "batt"]).stdout.split("\n")[1].trim();
+    return _infoString = Process.runSync("pmset", ["-g", "batt"])
+      .stdout
+      .split("\n")[1]
+      .trim();
   }
 }
