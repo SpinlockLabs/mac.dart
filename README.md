@@ -14,7 +14,7 @@ Dart package for macOS integration.
 ## Example
 
 ```dart
-import "package:mac/mac.dart";
+import 'package:mac/mac.dart';
 
 void main() {
   say("Your computer is named: ${SystemInformation.getComputerName()}");

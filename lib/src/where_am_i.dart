@@ -587,9 +587,8 @@ Future<Map<String, dynamic>> getLocationInfo() async {
   _ensureExecutable();
   var result = await Process.run(_exePath, []);
   if (result.exitCode != 0) {
-    throw new Exception(
-      "Failed to get geolocation: ${result.stdout.toString().trim()}"
-    );
+    throw Exception(
+        "Failed to get geolocation: ${result.stdout.toString().trim()}");
   }
   List<String> lines = result.stdout.split("\n");
   var i = 0;
@@ -601,20 +600,16 @@ Future<Map<String, dynamic>> getLocationInfo() async {
     i++;
   }
   var needed = lines.getRange(l, lines.length - 1).toList();
-  var m = {};
+  var m = <String, dynamic>{};
   for (var line in needed) {
     var parts = line.split(": ");
     var val = parts.skip(1).join(" ");
-    var pz = [
-      num.parse,
-      DateTime.parse
-    ];
+    var pz = [num.parse, DateTime.parse];
     for (var m in pz) {
       try {
         var v = m(val);
         val = v;
-      } catch (e) {
-      }
+      } catch (e) {}
     }
     m[parts[0].toLowerCase()] = val;
   }
@@ -622,10 +617,10 @@ Future<Map<String, dynamic>> getLocationInfo() async {
 }
 
 void _ensureExecutable() {
-  var file = new File(_exePath);
+  var file = File(_exePath);
   if (!file.existsSync()) {
     file.createSync(recursive: true);
-    file.writeAsBytesSync(BASE64.decode(_EXECUTABLE.replaceAll("\n", "")));
+    file.writeAsBytesSync(base64Decode(_EXECUTABLE.replaceAll("\n", "")));
     Process.runSync("chmod", ["+x", _exePath]);
   }
 }

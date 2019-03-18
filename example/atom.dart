@@ -1,5 +1,6 @@
-import "package:mac/mac.dart";
+import 'package:mac/mac.dart';
 
+@deprecated
 void main() {
   Atom.createDocument();
 }

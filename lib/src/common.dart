@@ -1,8 +1,10 @@
 part of mac;
 
 class Common {
-  static bool areHiddenFilesShown() => Defaults.get(Domains.FINDER, "AppleShowAllFiles");
-  static void setHiddenFilesShown(bool shown) => Defaults.set(Domains.FINDER, "AppleShowAllFiles", shown);
+  static bool areHiddenFilesShown() =>
+      Defaults.get(Domains.FINDER, "AppleShowAllFiles");
+  static void setHiddenFilesShown(bool shown) =>
+      Defaults.set(Domains.FINDER, "AppleShowAllFiles", shown);
 }
 
 class Homebrew {
@@ -20,21 +22,21 @@ class Opener {
   static void open(String path) {
     var result = Process.runSync("open", [path]);
     if (result.exitCode != 0) {
-      throw new Exception("Failed to open ${path}");
+      throw Exception("Failed to open ${path}");
     }
   }
 
   static void openWith(String path, String app) {
     var result = Process.runSync("open", ["-a", app, path]);
     if (result.exitCode != 0) {
-      throw new Exception("Failed to open ${path} with ${app}");
+      throw Exception("Failed to open ${path} with ${app}");
     }
   }
 
   static void reveal(String path) {
     var result = Process.runSync("open", ["-R", path]);
     if (result.exitCode != 0) {
-      throw new Exception("Failed to reveal ${path}");
+      throw Exception("Failed to reveal ${path}");
     }
   }
 
@@ -45,7 +47,7 @@ class Opener {
   static void edit(String path) {
     var result = Process.runSync("open", ["-e", path]);
     if (result.exitCode != 0) {
-      throw new Exception("Failed to edit ${path}");
+      throw Exception("Failed to edit ${path}");
     }
   }
 }
@@ -56,11 +58,13 @@ class Domains {
 
 class AudioVolume {
   static int getVolume() {
-    return int.parse(runAppleScriptSync("output volume of (get volume settings)"));
+    return int.parse(
+        runAppleScriptSync("output volume of (get volume settings)"));
   }
 
   static bool isMuted() {
-    return runAppleScriptSync("output muted of (get volume settings)") == "true";
+    return runAppleScriptSync("output muted of (get volume settings)") ==
+        "true";
   }
 
   static void setVolume(int volume) {
@@ -77,7 +81,8 @@ class AudioVolume {
 }
 
 class SystemInformation {
-  static Map<String, dynamic> _info = parseAppleScriptRecord(runAppleScriptSync("system info"));
+  static Map<String, dynamic> _info =
+      parseAppleScriptRecord(runAppleScriptSync("system info"));
 
   static String getVersion() => _info["system version"];
   static String getUser() => _info["short user name"];
@@ -92,7 +97,8 @@ class SystemInformation {
   static int getCpuSpeed() => _info["CPU speed"];
   static int getPhysicalMemory() => _info["physical memory"];
   static String getIPv4Address() => _info["IPv4 address"];
-  static String getPrimaryEthernetAddress() => _info["primary Ethernet address"];
+  static String getPrimaryEthernetAddress() =>
+      _info["primary Ethernet address"];
 }
 
 class Computer {
@@ -114,17 +120,17 @@ class ProfilerData {
 
   List<ProfilerData> get children {
     if (data["_items"] == null) {
-      return [];
+      return <ProfilerData>[];
     } else {
-      return data["_items"].map((x) => new ProfilerData(x)).toList();
+      return data["_items"].map((x) => ProfilerData(x)).toList().cast<ProfilerData>();
     }
   }
 
   bool get hasChildren => data.containsKey("_items");
 
   Map<String, dynamic> get metrics {
-    List<String> keys = data.keys.where((x) => !x.startsWith("_")).toList();
-    Map x = {};
+    List<String> keys = data.keys.where((x) => !x.startsWith("_")).toList().cast<String>();
+    var x = <String, dynamic>{};
     for (var n in keys) {
       x[n] = data[n];
     }
@@ -135,14 +141,16 @@ class ProfilerData {
 class SystemProfiler {
   static const String HARDWARE_TYPE = "SPHardwareDataType";
 
-  static Map<String, dynamic> readSimpleMap(String dataType, {bool cache: false}) {
+  static Map<String, dynamic> readSimpleMap(String dataType,
+      {bool cache = false}) {
     if (cache && _cache.containsKey(dataType)) {
       return _cache[dataType];
     }
 
     var value = PropertyLists.fromString(
-        getStdoutOf("system_profiler", ["-xml", dataType])
-    ).first["_items"].fold({}, (a, b) {
+            getStdoutOf("system_profiler", ["-xml", dataType]))
+        .first["_items"]
+        .fold({}, (a, b) {
       a.addAll(b);
       return a;
     });
@@ -155,9 +163,8 @@ class SystemProfiler {
   }
 
   static ProfilerData read(String dataType) {
-    var value = new ProfilerData(PropertyLists.fromString(
-        getStdoutOf("system_profiler", ["-xml", "-detailLevel", "full", dataType])
-    ).first);
+    var value = ProfilerData(PropertyLists.fromString(getStdoutOf(
+        "system_profiler", ["-xml", "-detailLevel", "full", dataType])).first);
 
     return value;
   }
@@ -171,15 +178,18 @@ class System {
   }
 
   static String getMachineName() {
-    return SystemProfiler.readSimpleMap(SystemProfiler.HARDWARE_TYPE, cache: true)["machine_name"];
+    return SystemProfiler.readSimpleMap(SystemProfiler.HARDWARE_TYPE,
+        cache: true)["machine_name"];
   }
 
   static String getCpuType() {
-    return SystemProfiler.readSimpleMap(SystemProfiler.HARDWARE_TYPE, cache: true)["cpu_type"];
+    return SystemProfiler.readSimpleMap(SystemProfiler.HARDWARE_TYPE,
+        cache: true)["cpu_type"];
   }
 
   static String getSerialNumber() {
-    return SystemProfiler.readSimpleMap(SystemProfiler.HARDWARE_TYPE, cache: true)["serial_number"];
+    return SystemProfiler.readSimpleMap(SystemProfiler.HARDWARE_TYPE,
+        cache: true)["serial_number"];
   }
 
   static String runShell(String command) {
@@ -187,7 +197,8 @@ class System {
   }
 
   static String runAdminShell(String command) {
-    return runAppleScriptSync('do shell script "${command}" with administrator privileges');
+    return runAppleScriptSync(
+        'do shell script "${command}" with administrator privileges');
   }
 
   static String getCurrentUser() {
@@ -197,23 +208,26 @@ class System {
 
 class Volumes {
   static List<Volume> list() {
-    var disks = [];
+    var disks = <Volume>[];
 
     void c(info) {
-      var disk = new Volume(info["VolumeName"] != null ? info["VolumeName"] : info["DeviceIdentifier"]);
+      var disk = Volume(info["VolumeName"] != null
+          ? info["VolumeName"]
+          : info["DeviceIdentifier"]);
       disk.size = info["Size"];
       disk.id = info["DeviceIdentifier"];
 
       if (info["Partitions"] != null) {
         for (var p in info["Partitions"]) {
-          disk.partitions.add(new VolumePartition(p["name"])..size = p["Size"]);
+          disk.partitions.add(VolumePartition(p["name"])..size = p["Size"]);
         }
       }
 
       disks.add(disk);
     }
 
-    var plist = PropertyLists.fromString(Process.runSync("diskutil", ["list", "-plist"]).stdout);
+    var plist = PropertyLists.fromString(
+        Process.runSync("diskutil", ["list", "-plist"]).stdout);
 
     for (var d in plist["AllDisksAndPartitions"]) {
       c(d);
@@ -228,10 +242,10 @@ class Volumes {
 class Geolocation {
   static Future<LocationInfo> getLocation() async {
     var info = await getLocationInfo();
-    return new LocationInfo()
-      ..latitude = info["latitude"]
-      ..longitude = info["longitude"]
-      ..accuracy = info["accuracy (m)"]
+    return LocationInfo()
+      ..latitude = double.tryParse(info["latitude"])
+      ..longitude = double.tryParse(info["longitude"])
+      ..accuracy = double.tryParse(info["accuracy (m)"])
       ..timestamp = info["timestamp"];
   }
 }
@@ -243,13 +257,15 @@ class LocationInfo {
   String timestamp;
 
   @override
-  String toString() => "Location(latitude = ${latitude}, longitude = ${longitude}, accuracy = ${accuracy}, timestamp = ${timestamp})";
+  String toString() =>
+      "Location(latitude = ${latitude}, longitude = ${longitude}, accuracy = ${accuracy}, timestamp = ${timestamp})";
 }
 
 class Network {
   static String getNetworkName(String interface) {
     try {
-      var info = getStdoutOf("/usr/sbin/networksetup", ["-getairportnetwork", interface]);
+      var info = getStdoutOf(
+          "/usr/sbin/networksetup", ["-getairportnetwork", interface]);
       if (info.contains("not associated with an AirPort network")) {
         return null;
       }
@@ -261,14 +277,14 @@ class Network {
 
   static int getSignalStrength() {
     try {
-      var info = getStdoutOf("/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport", ["-I"]);
-      return int.parse(
-          info
-            .split("\n")
-            .map((it) => it.trim())
-            .firstWhere((it) => it.startsWith("agrCtlRSSI"))
-            .substring("agrCtlRSSI: ".length)
-      );
+      var info = getStdoutOf(
+          "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport",
+          ["-I"]);
+      return int.parse(info
+          .split("\n")
+          .map((it) => it.trim())
+          .firstWhere((it) => it.startsWith("agrCtlRSSI"))
+          .substring("agrCtlRSSI: ".length));
     } catch (e) {
       return null;
     }
@@ -303,8 +319,9 @@ class Clipboard {
 
   static String get() {
     return parseAppleScriptRecord(
-      runAppleScriptSync("paragraphs of (get the clipboard)")
-    ).join("\n").trim();
+            runAppleScriptSync("paragraphs of (get the clipboard)"))
+        .join("\n")
+        .trim();
   }
 }
 
@@ -318,11 +335,11 @@ class Battery {
   }
 
   static bool isCharging() {
-    return _info().contains("charging;");
+    return _info().contains(" charging;");
   }
 
   static bool isCharged() {
-    return _info().contains("charged;");
+    return _info().contains(" charged;");
   }
 
   static bool isPluggedIn() {
@@ -333,16 +350,14 @@ class Battery {
   static String _infoString;
 
   static String _info() {
-    var now = new DateTime.now().millisecondsSinceEpoch;
+    var now = DateTime.now().millisecondsSinceEpoch;
 
     if (_lastUpdate != null && (now - _lastUpdate) < 300) {
       return _infoString;
     }
 
     _lastUpdate = now;
-    return _infoString = Process.runSync("pmset", ["-g", "batt"])
-      .stdout
-      .split("\n")[1]
-      .trim();
+    return _infoString =
+        Process.runSync("pmset", ["-g", "batt"]).stdout.split("\n")[1].trim();
   }
 }

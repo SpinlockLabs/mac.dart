@@ -2,13 +2,13 @@ part of mac.utils;
 
 Future<String> fetch(String url) async {
   var uri = Uri.parse(url);
-  var client = new HttpClient();
+  var client = HttpClient();
   var request = await client.getUrl(uri);
   var response = await request.close();
   if (response.statusCode != 200) {
-    throw new Exception("Failed to fetch ${url}");
+    throw Exception("Failed to fetch ${url}");
   }
-  return response.transform(UTF8.decoder).join().then((out) {
+  return response.transform(const Utf8Decoder()).join().then((out) {
     client.close();
     return out;
   });
@@ -16,6 +16,6 @@ Future<String> fetch(String url) async {
 
 Future<dynamic> fetchJSON(String url) async {
   var text = await fetch(url);
-  var json = JSON.decode(text);
+  var json = jsonDecode(text);
   return json;
 }

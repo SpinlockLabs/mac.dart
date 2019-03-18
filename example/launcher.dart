@@ -1,5 +1,6 @@
-import "package:mac/mac.dart";
+import 'package:mac/mac.dart';
 
 void main() {
-  UI.chooseApplicationSync().launch();
+  var app = UI.chooseApplicationSync();
+  app.launch();
 }

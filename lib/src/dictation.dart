@@ -3,23 +3,19 @@ part of mac;
 class SpeechRecognizer {
   static String selectSync(List<String> commands, {String prompt}) {
     var script = "listen";
-    script += UI._build({
-      "for #": commands,
-      'with prompt "#"': prompt
-    });
+    script += UI._build({"for #": commands, 'with prompt "#"': prompt});
 
-    return parseAppleScriptRecord(Applications.tellSync("SpeechRecognitionServer", script));
+    return parseAppleScriptRecord(
+        Applications.tellSync("SpeechRecognitionServer", script));
   }
 
   static Future<String> select(List<String> commands, {String prompt}) async {
     var script = "listen";
 
-    script += UI._build({
-      "for #": commands,
-      'with prompt "#"': prompt
-    });
+    script += UI._build({"for #": commands, 'with prompt "#"': prompt});
 
-    return parseAppleScriptRecord(await Applications.tell("SpeechRecognitionServer", script));
+    return parseAppleScriptRecord(
+        await Applications.tell("SpeechRecognitionServer", script));
   }
 }
 

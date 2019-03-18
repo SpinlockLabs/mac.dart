@@ -1,6 +1,6 @@
-import "package:mac/mac.dart";
+import 'package:mac/mac.dart';
 
 main() async {
-  var info = Applications.getInfoPlist("Google Chrome Canary");
+  var info = Applications.getInfoPlist("Google Chrome");
   print(info);
 }

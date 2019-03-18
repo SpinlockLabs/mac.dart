@@ -1,10 +1,17 @@
-import "package:mac/mac.dart";
+import 'package:mac/mac.dart';
 
 void main() {
-  var app = Applications.get("Textual 5");
+  _checkIfInstalled("Google Chrome");
+  _checkIfInstalled("Slack");
+}
+
+void _checkIfInstalled(String appName) {
+  var app = Applications.get(appName);
 
   if (app.isInstalled()) {
-    print("IDs: ${app.getIds()}");
-    print("Path: ${app.getPath()}");
+    print('IDs: ${app.getIds()}');
+    print('Path: ${app.getPath()}');
+  } else {
+    print('$appName is not installed.');
   }
 }

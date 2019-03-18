@@ -1,32 +1,30 @@
 part of mac.utils;
 
-/**
- * Creates a Friendly Date and Time
- */
+/// Creates a Friendly Date and Time
 String friendlyDateTime(DateTime time) {
   return "${friendlyDate(time)} at ${friendlyTime(time)}";
 }
 
-/**
- * Creates a Friendly Date String
- */
+/// Creates a Friendly Date String
 String friendlyDate(DateTime time) {
   return "${monthName(time.month)} ${time.day}${friendlyDaySuffix(time.day)}, ${time.year}";
 }
 
-/**
- * Creates a Friendly Time String
- */
-String friendlyTime(DateTime time, {bool includeTimezone: false, bool includeSecond: true, bool includeSuffix: true}) {
+/// Creates a Friendly Time String
+String friendlyTime(DateTime time,
+    {bool includeTimezone = false,
+    bool includeSecond = true,
+    bool includeSuffix = true}) {
   var suffix = time.hour >= 12 ? "PM" : "AM";
   var hour = ((time.hour + 11) % 12 + 1);
 
-  return "${hour}:${friendlyTimeDigit(time.minute)}" + (includeSecond ? ":${friendlyTimeDigit(time.second)}" : "") + (includeSuffix ? " ${suffix}" : "") + (includeTimezone ? " (in ${time.timeZoneName})" : "");
+  return "${hour}:${friendlyTimeDigit(time.minute)}" +
+      (includeSecond ? ":${friendlyTimeDigit(time.second)}" : "") +
+      (includeSuffix ? " ${suffix}" : "") +
+      (includeTimezone ? " (in ${time.timeZoneName})" : "");
 }
 
-/**
- * Creates a friendly time digit string
- */
+/// Creates a friendly time digit string
 String friendlyTimeDigit(int digit) {
   if (digit > 9) {
     return digit.toString();
@@ -35,9 +33,7 @@ String friendlyTimeDigit(int digit) {
   }
 }
 
-/**
- * Creates a Friendly Day Suffix
- */
+/// Creates a Friendly Day Suffix
 String friendlyDaySuffix(int day) {
   switch (day) {
     case 1:
@@ -55,33 +51,29 @@ String friendlyDaySuffix(int day) {
   }
 }
 
-/**
- * Gets the Day Name
- */
+/// Gets the Day Name
 String dayName(int number) {
   switch (number) {
-    case DateTime.SUNDAY:
+    case DateTime.sunday:
       return "Sunday";
-    case DateTime.MONDAY:
+    case DateTime.monday:
       return "Monday";
-    case DateTime.TUESDAY:
+    case DateTime.tuesday:
       return "Tuesday";
-    case DateTime.WEDNESDAY:
+    case DateTime.wednesday:
       return "Wednesday";
-    case DateTime.THURSDAY:
+    case DateTime.thursday:
       return "Thursday";
-    case DateTime.FRIDAY:
+    case DateTime.friday:
       return "Friday";
-    case DateTime.SATURDAY:
+    case DateTime.saturday:
       return "Saturday";
     default:
       throw "Should never happen.";
   }
 }
 
-/**
- * Gets a Month Name
- */
+/// Gets a Month Name
 String monthName(int number) {
   switch (number) {
     case 1:
@@ -112,13 +104,13 @@ String monthName(int number) {
   return "(not a month?)";
 }
 
-DateTime now() => new DateTime.now();
+DateTime now() => DateTime.now();
 
 DateTime offsetDay(DateTime original, int days) {
   if (days.isNegative) {
-    return original.subtract(new Duration(days: days.abs()));
+    return original.subtract(Duration(days: days.abs()));
   } else {
-    return original.add(new Duration(days: days));
+    return original.add(Duration(days: days));
   }
 }
 
@@ -138,7 +130,7 @@ String _timezoneName;
 
 String get timezoneName {
   if (_timezoneName == null) {
-    _timezoneName = new DateTime.now().timeZoneName;
+    _timezoneName = DateTime.now().timeZoneName;
   }
 
   return _timezoneName;

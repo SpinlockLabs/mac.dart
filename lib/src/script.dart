@@ -6,18 +6,19 @@ Future<String> runAppleScript(String input) async {
     String error = result.stderr.trim();
 
     if (error.contains("User canceled")) {
-      throw new UserCanceledException();
+      throw UserCanceledException();
     }
 
     if (error.contains("syntax error:")) {
       var split = error.split(":");
       var msg = split.skip(2).join(":").trim();
-      throw new ScriptSyntaxError(msg);
+      throw ScriptSyntaxError(msg);
     }
 
-    throw new Exception("Failed to execute script!\nSTDERR:\n${error}");
+    throw Exception("Failed to execute script!\nSTDERR:\n${error}");
   }
-  return result.stdout.trim();}
+  return result.stdout.trim();
+}
 
 String runAppleScriptSync(String input) {
   var result = Process.runSync("osascript", ["-ss", "-e", input]);
@@ -25,16 +26,16 @@ String runAppleScriptSync(String input) {
     String error = result.stderr.trim();
 
     if (error.contains("User canceled")) {
-      throw new UserCanceledException();
+      throw UserCanceledException();
     }
 
     if (error.contains("syntax error:")) {
       var split = error.split(":");
       var msg = split.skip(2).join(":").trim();
-      throw new ScriptSyntaxError(msg);
+      throw ScriptSyntaxError(msg);
     }
 
-    throw new Exception("Failed to execute script!\nSTDERR:\n${error}");
+    throw Exception("Failed to execute script!\nSTDERR:\n${error}");
   }
   return result.stdout.trim();
 }
@@ -58,7 +59,8 @@ Future<ProcessResult> runOSAScript(String input, String language) async {
 }
 
 void say(String text, {String voice}) {
-  runAppleScriptSync('say "${text}"${voice != null ? ' using "${voice}"' : ""}');
+  runAppleScriptSync(
+      'say "${text}"${voice != null ? ' using "${voice}"' : ""}');
 }
 
 Future<String> tellApplication(String app, String action) async {
@@ -69,7 +71,7 @@ Future<String> tellApplication(String app, String action) async {
   """));
 }
 
-String tellApplicationSync(String app, String action){
+String tellApplicationSync(String app, String action) {
   return runAppleScriptSync("""
   tell application "${app}"
     ${action}
@@ -78,5 +80,5 @@ String tellApplicationSync(String app, String action){
 }
 
 dynamic parseAppleScriptRecord(String input) {
-  return new RecordParser().parse(input).value;
+  return RecordParser().parse(input).value;
 }

@@ -1,7 +1,7 @@
 import "dart:io";
 import "dart:convert";
 import "package:mac/mac.dart";
-import "package:mac/utils.dart";
+import 'package:mac/utils.dart';
 
 class Data {
   static Map<String, String> storage = {};
@@ -17,21 +17,21 @@ class Data {
   }
 
   static void load() {
-    var file = new File("${Platform.environment["HOME"]}/.osx/commander.json");
+    var file = File("${Platform.environment["HOME"]}/.osx/commander.json");
 
     if (file.existsSync()) {
-      storage = JSON.decode(file.readAsStringSync());
+      storage = jsonDecode(file.readAsStringSync());
     }
   }
 
   static void save() {
-    var file = new File("${Platform.environment["HOME"]}/.osx/commander.json");
+    var file = File("${Platform.environment["HOME"]}/.osx/commander.json");
 
     if (!file.existsSync()) {
       file.createSync(recursive: true);
     }
 
-    file.writeAsStringSync(new JsonEncoder.withIndent("  ").convert(storage));
+    file.writeAsStringSync(JsonEncoder.withIndent("  ").convert(storage));
   }
 }
 
@@ -88,15 +88,15 @@ void select() {
   } else if (action == "Change my name") {
     var name = Data.get("name", "The User");
     try {
-      var result = UI.displayDialogSync("Enter Name", buttons: ["Ok"], defaultAnswer: name);
+      var result = UI.displayDialogSync("Enter Name",
+          buttons: ["Ok"], defaultAnswer: name);
       if (!result.gaveUp) {
         Data.set("name", result.text);
         say("I will now call you ${result.text}");
       } else {
         say("You didn't enter anything, so I gave up.");
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   } else {
     say("I don't understand.");
     select();
@@ -104,26 +104,21 @@ void select() {
 }
 
 void closeEverything() {
-  var result = SpeechRecognizer.selectSync([
-    "Yes",
-    "No",
-    "Go Back"
-  ], prompt: "Are you sure?");
+  var result = SpeechRecognizer.selectSync(["Yes", "No", "Go Back"],
+      prompt: "Are you sure?");
 
   if (result == "Yes") {
     for (var app in TaskManager.getOpenTasks()) {
       Applications.quit(app);
     }
-  } else if (result == "Go Back") {
-  }
+  } else if (result == "Go Back") {}
 }
 
 void open() {
   var apps = Applications.list().map((it) => it.name).toList();
-  var result = SpeechRecognizer.selectSync([
-    "What can I open?",
-    "Go Back"
-  ]..addAll(apps), prompt: "What would you like to open?");
+  var result = SpeechRecognizer.selectSync(
+      ["What can I open?", "Go Back"]..addAll(apps),
+      prompt: "What would you like to open?");
 
   if (result == "What can I open?") {
     var str = apps.sublist(0, apps.length - 1).join(", ");

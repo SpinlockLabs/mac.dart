@@ -1,7 +1,7 @@
-import "package:mac/mac.dart";
+import 'package:mac/mac.dart';
 
 void main() {
-  var window = Finder.open("/");
+  var window = Finder.open('/');
   sleep(FIVE_SECONDS);
   window.close();
 }

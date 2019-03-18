@@ -1,7 +1,7 @@
-import "package:mac/mac.dart";
+import 'package:mac/mac.dart';
 
 void main() {
-  for (var i = 1; i <= 5 ; i++) {
+  for (var i = 1; i <= 5; i++) {
     System.beep();
   }
 }
