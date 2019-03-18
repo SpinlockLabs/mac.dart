@@ -1,5 +1,5 @@
-import "package:mac/mac.dart";
+import 'package:mac/mac.dart';
 
 void main() {
-  Keyboard.stroke("return");
+  Keyboard.stroke('return');
 }

@@ -1,6 +1,6 @@
 library mac.record_parser;
 
-import "package:petitparser/petitparser.dart";
+import 'package:petitparser/petitparser.dart';
 
 class RecordGrammarDefinition extends GrammarDefinition {
   final _escapeTable = const {
@@ -17,88 +17,106 @@ class RecordGrammarDefinition extends GrammarDefinition {
   @override
   start() => ref(value).end();
 
-  value() => ref(dict) | ref(array) | ref(numberValue) | ref(stringValue) | ref(alias) | ref(data) | ref(dictEntry) | ref(undefinedValue) | ref(unknown);
-  dict() => char("{") & ref(dictEntry).separatedBy(char(",") & char(" ").optional(), includeSeparators: false) & char("}");
+  value() =>
+      ref(dict) |
+      ref(array) |
+      ref(numberValue) |
+      ref(stringValue) |
+      ref(alias) |
+      ref(data) |
+      ref(dictEntry) |
+      ref(undefinedValue) |
+      ref(unknown);
+  dict() =>
+      char("{") &
+      ref(dictEntry).separatedBy(char(",") & char(" ").optional(),
+          includeSeparators: false) &
+      char("}");
   dictEntry() => ref(keyString) & char(":") & ref(value);
-  array() => char("{") & ref(value).separatedBy(char(",") & char(" ").optional(), includeSeparators: false) & char("}");
+  array() =>
+      char("{") &
+      ref(value).separatedBy(char(",") & char(" ").optional(),
+          includeSeparators: false) &
+      char("}");
   alias() => string("alias ") & ref(stringValue);
-  stringValue() => char('"')
-    & ref(characterPrimitive).star()
-    & char('"');
+  stringValue() => char('"') & ref(characterPrimitive).star() & char('"');
 
   keyString() => ref(characterPrimitive).plusLazy(char(":")).flatten();
 
-  characterPrimitive() => ref(characterNormal)
-    | ref(characterEscape)
-    | ref(characterOctal);
+  characterPrimitive() =>
+      ref(characterNormal) | ref(characterEscape) | ref(characterOctal);
   characterNormal() => pattern('^"\\').flatten();
-  characterEscape() => char('\\')
-  & pattern(new List.from(_escapeTable.keys).join());
-  characterOctal() => string('\\u').seq(pattern("0-9A-Fa-f").times(4).flatten());
+  characterEscape() =>
+      char('\\') & pattern(List.from(_escapeTable.keys).join());
+  characterOctal() =>
+      string('\\u').seq(pattern("0-9A-Fa-f").times(4).flatten());
   data() => string("\u00ABdata ") & any().plus() & char("\u00AB");
-  numberValue() => (char('-').optional()
-    & char('0').or(digit().plus())
-    & char('.').seq(digit().plus()).optional()
-    & pattern('eE').seq(pattern('-+').optional()).seq(digit().plus()).optional()).flatten();
+  numberValue() => (char('-').optional() &
+          char('0').or(digit().plus()) &
+          char('.').seq(digit().plus()).optional() &
+          pattern('eE')
+              .seq(pattern('-+').optional())
+              .seq(digit().plus())
+              .optional())
+      .flatten();
   undefinedValue() => any().starGreedy((char("}") | char("\n") | char(",")));
   unknown() => any().plus().flatten();
 }
 
 class RecordGrammar extends GrammarParser {
-  RecordGrammar() : super(new RecordGrammarDefinition());
+  RecordGrammar() : super(RecordGrammarDefinition());
 }
 
 class RecordParserDefinition extends RecordGrammarDefinition {
   @override
   dict() => super.dict().map((it) {
-    var map = {};
-    for (var x in it[1]) {
-      map[x.keys.first] = x.values.first;
-    }
-    return map;
-  });
+        var map = <String, dynamic>{};
+        for (var x in it[1]) {
+          map[x.keys.first] = x.values.first;
+        }
+        return map;
+      });
 
   @override
   dictEntry() => super.dictEntry().map((it) {
-    return {
-      it[0]: it[2]
-    };
-  });
+        return <String, dynamic>{it[0]: it[2]};
+      });
 
   @override
   array() => super.array().map((it) {
-    return it[1];
-  });
+        return it[1];
+      });
 
   @override
   alias() => super.alias().map((it) {
-    return "/Volumes/" + it[1].replaceAll(":", "/");
-  });
+        return "/Volumes/" + it[1].replaceAll(":", "/");
+      });
 
   @override
   stringValue() => super.stringValue().map((it) {
-    return it[1].join();
-  });
+        return it[1].join();
+      });
 
   @override
   data() => super.data().map((it) {
-    return it[1];
-  });
+        return it[1];
+      });
 
   @override
   numberValue() => super.numberValue().map((it) {
-    return num.parse(it);
-  });
+        return num.parse(it);
+      });
 
   @override
-  characterEscape() => super.characterEscape().map((each) => _escapeTable[each[1]]);
+  characterEscape() =>
+      super.characterEscape().map((each) => _escapeTable[each[1]]);
 
   @override
   undefinedValue() => super.undefinedValue().map((it) {
-    return it.join();
-  });
+        return it.join();
+      });
 }
 
 class RecordParser extends GrammarParser {
-  RecordParser() : super(new RecordParserDefinition());
+  RecordParser() : super(RecordParserDefinition());
 }

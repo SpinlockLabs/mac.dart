@@ -1,4 +1,4 @@
-import "package:mac/mac.dart";
+import 'package:mac/mac.dart';
 
 main() async {
   var domains = Defaults.listDomains();

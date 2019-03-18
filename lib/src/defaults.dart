@@ -19,7 +19,7 @@ class Defaults {
     var result = Process.runSync("defaults", ["export", domain, "-"]);
 
     if (result.exitCode != 0) {
-      throw new Exception("Failed to read domain: ${domain}");
+      throw Exception("Failed to read domain: ${domain}");
     }
 
     var out = result.stdout.trim();
@@ -30,7 +30,7 @@ class Defaults {
   static void set(String domain, String key, dynamic value) {
     var result = Process.runSync("defaults", ["write", key, value.toString()]);
     if (result.exitCode != 0) {
-      throw new Exception("Failed to set ${domain}@${key} to ${value}");
+      throw Exception("Failed to set ${domain}@${key} to ${value}");
     }
   }
 
@@ -52,7 +52,7 @@ class Defaults {
     file.deleteSync();
 
     if (result.exitCode != 0) {
-      throw new Exception("Failed to import data into ${domain}");
+      throw Exception("Failed to import data into ${domain}");
     }
   }
 }

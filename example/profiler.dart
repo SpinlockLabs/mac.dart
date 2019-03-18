@@ -1,12 +1,13 @@
-import "package:mac/mac.dart";
+import 'package:mac/mac.dart';
 
 main() {
-  var l = SystemProfiler.read("SPHardwareDataType");
+  var l = SystemProfiler.read('SPHardwareDataType');
+  // TODO: Root is null
   pr(l);
 }
 
-void pr(ProfilerData data, {String indent: ""}) {
-  print("${indent}${data.name}:");
+void pr(ProfilerData data, {String indent = ""}) {
+  print('${indent}${data.name}:');
 
   if (!data.hasChildren) {
     for (var lm in data.metrics.keys) {

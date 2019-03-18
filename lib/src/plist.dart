@@ -16,40 +16,44 @@ class _PropertyListParser {
       case "date":
         return DateTime.parse(elem.text);
       case "data":
-        var str = elem.text.trim()
-          .replaceAll(" ", "")
-          .replaceAll("\n", "")
-          .replaceAll("\t", "");
-        return new Uint8List.fromList(BASE64.decode(str));
+        var str = elem.text
+            .trim()
+            .replaceAll(" ", "")
+            .replaceAll("\n", "")
+            .replaceAll("\t", "");
+        return base64Decode(str);
       case "array":
-        return elem.children
-        .where(_isElement)
-        .map(_handleElement)
-        .toList();
+        return elem.children.where(_isElement).map(_castElement).map(_handleElement).toList();
       case "dict":
         return _handleDict(elem);
     }
   }
 
-  Map _handleDict(libxml.XmlElement elem){
-    var children = elem.children.where(_isElement);
-    var key = children
-    .where((elem) => elem.name.local == "key")
-    .map((elem) => elem.text);
-    var values = children
-    .where((elem) => elem.name.local != "key")
-    .map(_handleElement);
-    return new Map.fromIterables(key, values);
+  Map _handleDict(libxml.XmlElement elem) {
+    var key = elem.children.where(_isElement)
+        .map(_castElement)
+        .where((elem) => elem.name.local == 'key')
+        .map((elem) => elem.text);
+    var values = elem.children
+        .where(_isElement)
+        .map(_castElement)
+        .where((elem) => elem.name.local != 'key')
+        .map(_handleElement);
+    return Map.fromIterables(key, values);
   }
 
   dynamic parse(String input) {
-    return _handleElement(libxml.parse(input).rootElement.children.where(_isElement).first);
+    return _handleElement(
+        libxml.parse(input).rootElement.children.where(_isElement).first);
   }
 
   bool _isElement(libxml.XmlNode node) => node is libxml.XmlElement;
+
+  libxml.XmlElement _castElement(libxml.XmlNode node) =>
+      node as libxml.XmlElement;
 }
 
-_PropertyListParser _plistParser = new _PropertyListParser();
+_PropertyListParser _plistParser = _PropertyListParser();
 
 class PropertyLists {
   static dynamic fromString(String input) {
@@ -65,7 +69,7 @@ class PropertyLists {
   }
 
   static String encode(dynamic input) {
-    var builder = new libxml.XmlBuilder();
+    var builder = libxml.XmlBuilder();
     void _handleValue(dynamic it) {
       if (it is String) {
         builder.element("string", nest: () {
@@ -87,7 +91,7 @@ class PropertyLists {
         builder.element(it.toString());
       } else if (it is List<int>) {
         builder.element("data", nest: () {
-          builder.text(BASE64.encode(it));
+          builder.text(base64Encode(it));
         });
       } else if (it is List) {
         builder.element("array", nest: () {
@@ -106,7 +110,7 @@ class PropertyLists {
           }
         });
       } else {
-        throw new Exception("Invalid Value: ${it}");
+        throw Exception("Invalid Value: ${it}");
       }
     }
 
@@ -128,7 +132,7 @@ class PropertyLists {
     file.writeAsStringSync(input);
     var result = Process.runSync("plutil", ["-convert", format, file.path]);
     if (result.exitCode != 0) {
-      throw new Exception("Failed to convert plist.");
+      throw Exception("Failed to convert plist.");
     }
     file.deleteSync();
     return result.stdout.trim();

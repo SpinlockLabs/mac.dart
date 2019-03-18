@@ -1,5 +1,8 @@
 part of mac;
 
+const fetchApps = r'''paragraphs of (do shell script "find /Applications/ -name \"*.app\" -maxdepth 1 | sed -e \"s/\\(.*\\)\\/\\([^\\/]*\\).app/\\2/g\"")''';
+const fetchAppsTwoDeep = r'''paragraphs of (do shell script "find /Applications/ -name \"*.app\" -maxdepth 2 | sed -e \"s/\\(.*\\)\\/\\([^\\/]*\\).app/\\2/g\"")''';
+
 class Finder {
   static void activate() {
     Applications.activate("Finder");
@@ -20,7 +23,7 @@ class Finder {
   }
 
   static FinderWindow getFrontWindow() {
-    return new FinderWindow("front Finder window");
+    return FinderWindow("front Finder window");
   }
 
   static void closeAll() {
@@ -29,20 +32,20 @@ class Finder {
 
   static List<FinderWindow> getWindows() {
     var count = getWindowCount();
+    var windows = <FinderWindow>[];
     if (count == 0) {
-      return [];
+      return windows;
     }
 
-    var windows = [];
     for (var i = 1; i <= count; i++) {
-      windows.add(new FinderWindow(i));
+      windows.add(FinderWindow(i));
     }
     return windows;
   }
 
   static int getWindowCount() => Applications.getWindowCount("Finder");
 
-  static FinderWindow getWindow(dynamic id) => new FinderWindow(id);
+  static FinderWindow getWindow(dynamic id) => FinderWindow(id);
 }
 
 class DefaultBrowser {
@@ -151,7 +154,8 @@ class GoogleChrome {
     tellTab("exit presentation mode ${tab}");
   }
 
-  static String _withWindow(int id, String action, {String before, String after}) {
+  static String _withWindow(int id, String action,
+      {String before, String after}) {
     return tell('''
     set theWindows to every window
     repeat with theWindow in theWindows
@@ -163,23 +167,15 @@ class GoogleChrome {
     ''');
   }
 
-  static String _withTab(int window, int id, String action, {String before, String after}) {
-    return _withWindow(window, '''
-    set theTabs to every tab
-    repeat with theTab in theTabs
-      if id of theTab is ${id} then
-        ${action}
-      end if
-    end repeat
-    ''', before: before, after: after);
-  }
-
   static GoogleChromeWindow getMainWindow() {
     return getWindows().first;
   }
 
   static GoogleChromeTab createTab(int window) {
-    return new GoogleChromeTab(window, parseAppleScriptRecord(tell("get id of (make new tab at end of tabs of window ${window})")));
+    return GoogleChromeTab(
+        window,
+        parseAppleScriptRecord(tell(
+            "get id of (make new tab at end of tabs of window ${window})")));
   }
 
   static int getWindowIndex(int id) {
@@ -191,18 +187,23 @@ class GoogleChrome {
   static List<GoogleChromeWindow> getWindows() {
     var r = tell("get id of every window");
     return parseAppleScriptRecord(r).map((it) {
-      return new GoogleChromeWindow(it);
-    }).toList()..sort((a, b) => b.id.compareTo(a.id));
+      return GoogleChromeWindow(it);
+    }).toList()
+      ..sort((a, b) => b.id.compareTo(a.id));
   }
 
   static List<GoogleChromeTab> getTabs(int window) {
-    return parseAppleScriptRecord(_withWindow(window, """
+    return parseAppleScriptRecord(_withWindow(
+        window,
+        """
     set theTabs to every tab of theWindow
     repeat with theTab in theTabs
       set theId to the id of theTab
       set end of theTabIds to theId
     end repeat
-    """, before: "set theTabIds to {}", after: "return theTabIds"));
+    """,
+        before: "set theTabIds to {}",
+        after: "return theTabIds"));
   }
 
   static String tell(String action) {
@@ -214,7 +215,7 @@ class GoogleChrome {
     return id of active tab
     """);
 
-    return new GoogleChromeTab(window, parseAppleScriptRecord(result));
+    return GoogleChromeTab(window, parseAppleScriptRecord(result));
   }
 
   static String getTabName(int id) {
@@ -235,7 +236,6 @@ class GoogleChrome {
 
     return parseAppleScriptRecord(result);
   }
-
 }
 
 class GoogleChromeWindow {
@@ -360,19 +360,19 @@ class TaskManager {
   static Set<String> getTasks() {
     return parseAppleScriptRecord(runAppleScriptSync('''
     tell application "System Events" to get name of every process
-    ''')).toSet();
+    ''')).toSet().cast<String>();
   }
 
   static Set<int> getIds(String name) => runAppleScriptSync("""
   tell application "System Events"
     get id of every process whose name is "${name}"
   end tell
-  """).split(", ").map(int.parse);
+  """).split(", ").map(int.parse).cast<int>().toSet();
 
   static Set<String> getVisibleTasks() {
     return runAppleScriptSync('''
     tell application "System Events" to get name of every process whose visible is true
-    ''').split(", ").toSet();
+    ''').split(", ").toSet().cast<String>();
   }
 }
 
@@ -443,7 +443,8 @@ class Applications {
     setFrontMost(name, true);
   }
 
-  static String getVersion(String name) => parseAppleScriptRecord(tellSync(name, "get version"));
+  static String getVersion(String name) =>
+      parseAppleScriptRecord(tellSync(name, "get version"));
 
   static int getWindowCount(String name) {
     return int.parse(tellApplicationSync(name, "count of Finder windows"));
@@ -457,16 +458,14 @@ class Applications {
     tellSync(name, "reopen");
   }
 
-  static Set<Application> list({bool normal: true}) {
-    if (normal) {
-      return parseAppleScriptRecord(runAppleScriptSync(r'''
-      paragraphs of (do shell script "find /Applications/ -name \"*.app\" -maxdepth 1 | sed -e \"s/\\(.*\\)\\/\\([^\\/]*\\).app/\\2/g\"")
-      ''')).toSet().map((it) => new Application(it));
-    } else {
-      return parseAppleScriptRecord(runAppleScriptSync(r'''
-      paragraphs of (do shell script "find /Applications/ -name \"*.app\" -maxdepth 2 | sed -e \"s/\\(.*\\)\\/\\([^\\/]*\\).app/\\2/g\"")
-      ''')).toSet().map((it) => new Application(it));
-    }
+  static Set<Application> list({bool normal = true}) {
+    var rawApps = _fetchRawApplications(normal ? fetchApps : fetchAppsTwoDeep);
+    var apps = rawApps.toSet().map((it) => Application(it)).toSet();
+    return Set<Application>.from(apps);
+  }
+
+  static _fetchRawApplications(String appleScript) {
+    return parseAppleScriptRecord(runAppleScriptSync(appleScript));
   }
 
   static String guessPath(String name) {
@@ -478,7 +477,7 @@ class Applications {
     ];
 
     for (var p in search) {
-      var dir = new Directory("${p}/${fname}");
+      var dir = Directory("${p}/${fname}");
 
       if (dir.existsSync()) {
         return dir.path;
@@ -489,18 +488,22 @@ class Applications {
   }
 
   static ApplicationInfo getInfoPlist(String name) {
-    return new ApplicationInfo(PropertyLists.fromFile(getAppFile(name, "Contents/Info.plist")));
+    return ApplicationInfo(
+        PropertyLists.fromFile(getAppFile(name, "Contents/Info.plist")));
   }
 
   static File getAppFile(String name, String path) {
-    return new File(guessPath(name) + "/${path}");
+    return File(guessPath(name) + "/${path}");
   }
 
-  static bool isInstalled(String name) => list().map((it) => it.name).contains(name);
-  static Application get(String name) => new Application(name);
+  static bool isInstalled(String name) =>
+      list().map((it) => it.name).contains(name);
+  static Application get(String name) => Application(name);
 
-  static String tellSync(String name, String action) => tellApplicationSync(name, action);
-  static Future<String> tell(String name, String action) => tellApplication(name, action);
+  static String tellSync(String name, String action) =>
+      tellApplicationSync(name, action);
+  static Future<String> tell(String name, String action) =>
+      tellApplication(name, action);
 }
 
 class ApplicationInfo {
@@ -554,7 +557,7 @@ class ApplicationInfo {
 
   @override
   String toString() {
-    return new JsonEncoder.withIndent("  ").convert(info);
+    return JsonEncoder.withIndent("  ").convert(info);
   }
 }
 
@@ -628,6 +631,7 @@ class Keyboard {
   }
 }
 
+@deprecated
 class Atom {
   static void activate() {
     tell("activate");
