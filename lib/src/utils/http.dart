@@ -8,7 +8,7 @@ Future<String> fetch(String url) async {
   if (response.statusCode != 200) {
     throw new Exception("Failed to fetch ${url}");
   }
-  return response.transform(UTF8.decoder).join().then((out) {
+  return UTF8.decoder.bind(response).join().then((out) {
     client.close();
     return out;
   });
